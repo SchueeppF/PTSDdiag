@@ -96,34 +96,27 @@ summarize_ptsd_changes <- function(data) {
 #' different diagnostic criteria
 #'
 #' @param summary_stats Resulting dataframe of function summarize_ptsd_changes
-#' @param columns Specific columns to include in summary
 #'
 #' @returns A formatted dataframe with summary statistic for the
 #' different diagnostic criteria
 #' @export
 #'
-create_readable_summary <- function(summary_stats, columns = NULL) {
-  if(is.null(columns)) {
-    summary_subset <- summary_stats
-  } else {
-    summary_subset <- summary_stats[summary_stats$column %in% columns,]
-  }
-
-  readable_summary <- data.frame(
-    Scenario = summary_subset$column,
-    `Total Diagnosed` = paste0(summary_subset$diagnosed,
-                               " (", summary_subset$diagnosed_percent, "%)"),
-    `Total Non-Diagnosed` = paste0(summary_subset$non_diagnosed,
-                                   " (", summary_subset$non_diagnosed_percent, "%)"),
-    `True Positive` = summary_subset$true_positive,
-    `True Negative` = summary_subset$true_negative,
-    `Newly Diagnosed` = summary_subset$newly_diagnosed,
-    `Newly Non-Diagnosed` = summary_subset$newly_nondiagnosed,
-    `True Cases` = summary_subset$true_cases,
-    `False Cases` = summary_subset$false_cases, `Sensitivity` = round(summary_subset$sensitivity, 4),
-    `Specificity` = round(summary_subset$specificity, 4),
-    `PPV` = round(summary_subset$ppv, 4),
-    `NPV` = round(summary_subset$npv, 4)
+create_readable_summary <- function(summary_stats) {
+  data.frame(
+    Scenario = summary_stats$column,
+    `Total Diagnosed` = paste0(summary_stats$diagnosed,
+                               " (", summary_stats$diagnosed_percent, "%)"),
+    `Total Non-Diagnosed` = paste0(summary_stats$non_diagnosed,
+                                   " (", summary_stats$non_diagnosed_percent, "%)"),
+    `True Positive` = summary_stats$true_positive,
+    `True Negative` = summary_stats$true_negative,
+    `Newly Diagnosed` = summary_stats$newly_diagnosed,
+    `Newly Non-Diagnosed` = summary_stats$newly_nondiagnosed,
+    `True Cases` = summary_stats$true_cases,
+    `False Cases` = summary_stats$false_cases,
+    `Sensitivity` = round(summary_stats$sensitivity, 4),
+    `Specificity` = round(summary_stats$specificity, 4),
+    `PPV` = round(summary_stats$ppv, 4),
+    `NPV` = round(summary_stats$npv, 4)
   )
-  return(readable_summary)
 }

@@ -1,18 +1,38 @@
 #' Find best three six-symptom-combinations for non-hierarchical PTSD diagnosis
 #'
-#' Determine the three best six-symptom-combinations, where at least four
-#' symptoms need to be present for diagnosis, regardless of which cluster
-#' they belong to
+#' Analyzes PTSD symptom data to find the three best six-symptom-combinations,
+#' where at least four symptoms need to be present for diagnosis,
+#' regardless of which cluster they belong to
 #'
 #' @param data A dataframe with 20 columns for the 20 symptoms with
-#' non-binarized values
+#' non-binarized values (columns named symptom_1 to symptom_20)
 #' @param score_by Method to select the best six-symptom-combinations
 #' (by minimizing the "newly_nondiagnosed" or by minimizing the "false_cases")
 #'
-#' @returns A list containing best combinations and diagnosis comparison
+#' @returns A list containing:
+#'  best combinations: List of three vectors containing the symptom numbers of best combinations
+#'  diagnosis comparison: data frame comparing original and new diagnostic criteria
+#'  summary: datatable with formatted summary statistics
 #' @export
 #'
 #' @importFrom utils combn
+#' @importFrom DT datatable
+#'
+#' @examples
+#' # Create example data
+#' ptsd_data <- data.frame(matrix(sample(0:4, 200, replace=TRUE), ncol=20))
+#' names(ptsd_data) <- paste0("symptom_", 1:20)
+#'
+#' results <- analyze_best_six_symptoms_four_required(ptsd_data)
+#'
+#' # Access best symptom combinations
+#' results$best_symptoms
+#'
+#' # View formatted summary table
+#' results$summary
+#'
+#' # Access raw comparison data
+#' results$diagnosis_comparison
 #'
 analyze_best_six_symptoms_four_required <- function(data, score_by = "false_cases") {
   # Validate scoring method
@@ -95,7 +115,13 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 
   return(list(
     best_symptoms = lapply(1:3, function(i) top_combinations[[i]]$combination),
-    diagnosis_comparison = comparison_df
+    diagnosis_comparison = comparison_df,
+    summary = DT::datatable(
+      create_readable_summary(
+        summarize_ptsd_changes(comparison_df)
+      ),
+      options = list(scrollX = TRUE)
+    )
   ))
 }
 
@@ -104,18 +130,39 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 
 #' Find best three six-symptom-combinations for hierarchical PTSD diagnosis
 #'
-#' Determine the three best six-symptom-combinations where at least 4 need
-#' to be present for diagnosis, one from each cluster
+#' Analyzes PTSD symptom data to find the three best six-symptom-combinations,
+#' where at least four symptoms need to be present for diagnosis,
+#' one from each cluster
+#'
 #' @param data A dataframe with 20 columns for the 20 symptoms with
-#' non-binarized values
+#' non-binarized values (columns named symptom_1 to symptom_20)
 #' @param score_by Method to select the best six-symptom-combinations
 #' (by minimizing the "newly_nondiagnosed" or by minimizing the "false_cases")
 #'
-#' @returns A list containing best combinations and diagnosis comparison
+#' @returns A list containing:
+#'  best combinations: List of three vectors containing the symptom numbers of best combinations
+#'  diagnosis comparison: data frame comparing original and new diagnostic criteria
+#'  summary: datatable with formatted summary statistics
 #' @export
 #'
 #' @importFrom utils combn
+#' @importFrom DT datatable
 #'
+#' @examples
+#' # Create example data
+#' ptsd_data <- data.frame(matrix(sample(0:4, 200, replace=TRUE), ncol=20))
+#' names(ptsd_data) <- paste0("symptom_", 1:20)
+#'
+#' results <- analyze_best_six_symptoms_four_required_clusters(ptsd_data)
+#'
+#' # Access best symptom combinations
+#' results$best_symptoms
+#'
+#' # View formatted summary table
+#' results$summary
+#'
+#' # Access raw comparison data
+#' results$diagnosis_comparison
 analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "false_cases") {
   # Validate scoring method
   valid_scoring <- c("false_cases", "newly_nondiagnosed")
@@ -260,7 +307,13 @@ analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "f
 
   return(list(
     best_symptoms = lapply(1:3, function(i) top_combinations[[i]]$combination),
-    diagnosis_comparison = comparison_df
+    diagnosis_comparison = comparison_df,
+    summary = DT::datatable(
+      create_readable_summary(
+        summarize_ptsd_changes(comparison_df)
+      ),
+      options = list(scrollX = TRUE)
+    )
   ))
 }
 

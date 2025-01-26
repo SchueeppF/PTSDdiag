@@ -5,12 +5,10 @@
 \title{Create readable summary of changes in diagnostic metrics when comparing
 different diagnostic criteria}
 \usage{
-create_readable_summary(summary_stats, columns = NULL)
+create_readable_summary(summary_stats)
 }
 \arguments{
 \item{summary_stats}{Resulting dataframe of function summarize_ptsd_changes}
-
-\item{columns}{Specific columns to include in summary}
 }
 \value{
 A formatted dataframe with summary statistic for the

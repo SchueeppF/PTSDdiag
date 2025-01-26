@@ -8,16 +8,36 @@ analyze_best_six_symptoms_four_required(data, score_by = "false_cases")
 }
 \arguments{
 \item{data}{A dataframe with 20 columns for the 20 symptoms with
-non-binarized values}
+non-binarized values (columns named symptom_1 to symptom_20)}
 
 \item{score_by}{Method to select the best six-symptom-combinations
 (by minimizing the "newly_nondiagnosed" or by minimizing the "false_cases")}
 }
 \value{
-A list containing best combinations and diagnosis comparison
+A list containing:
+ best combinations: List of three vectors containing the symptom numbers of best combinations
+ diagnosis comparison: data frame comparing original and new diagnostic criteria
+ summary: datatable with formatted summary statistics
 }
 \description{
-Determine the three best six-symptom-combinations, where at least four
-symptoms need to be present for diagnosis, regardless of which cluster
-they belong to
+Analyzes PTSD symptom data to find the three best six-symptom-combinations,
+where at least four symptoms need to be present for diagnosis,
+regardless of which cluster they belong to
+}
+\examples{
+# Create example data
+ptsd_data <- data.frame(matrix(sample(0:4, 200, replace=TRUE), ncol=20))
+names(ptsd_data) <- paste0("symptom_", 1:20)
+
+results <- analyze_best_six_symptoms_four_required(ptsd_data)
+
+# Access best symptom combinations
+results$best_symptoms
+
+# View formatted summary table
+results$summary
+
+# Access raw comparison data
+results$diagnosis_comparison
+
 }
