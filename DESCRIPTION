@@ -1,16 +1,26 @@
 Package: PTSDdiag
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Optimize PTSD Diagnostic Criteria Using PCL-5 Data
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
+      "Laura", "Weidmann",
       email = "jane@example.com",
       role = c("aut", "cre")
+    ),
+    person(
+      "Tobias R.", "Spiller",
+      role = c("aut"),
+      comment = c(ORCID = "your-orcid-if-available")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: A comprehensive toolkit for analyzing and optimizing PTSD 
+    (Post-Traumatic Stress Disorder) diagnostic criteria using PCL-5 (PTSD 
+    Checklist for DSM-5) data. The package provides functions to identify 
+    optimal subsets of PCL-5 items that maintain diagnostic accuracy while 
+    reducing assessment burden. It includes tools for both hierarchical 
+    (cluster-based) and non-hierarchical symptom combinations, calculation of 
+    diagnostic metrics, and comparison with standard DSM-5 criteria. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

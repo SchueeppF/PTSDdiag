@@ -2,16 +2,41 @@
 % Please edit documentation in R/scoring_and_diagnosis.R
 \name{summarize_ptsd}
 \alias{summarize_ptsd}
-\title{Summarize PTSD scores and diagnosis}
+\title{Summarize PTSD scores and diagnoses}
 \usage{
 summarize_ptsd(data)
 }
 \arguments{
-\item{data}{A dataframe containing PTSD total scores and diagnoses}
+\item{data}{A dataframe containing at minimum:
+* A 'total' column with PCL-5 total scores (from calculate_ptsd_total)
+* A 'PTSD_Diagnosis' column with TRUE/FALSE values (from
+  determine_ptsd_diagnosis)}
 }
 \value{
-A dataframe with summary statistics
+A dataframe with one row containing:
+  * mean_total: Mean PCL-5 total score
+  * sd_total: Standard deviation of PCL-5 total scores
+  * n_diagnosed: Number of positive PTSD diagnoses
 }
 \description{
-Creates a summary of PTSD total scores and diagnoses
+Creates a summary of PCL-5 total scores and PTSD diagnoses, including mean
+total score, standard deviation, and number of positive diagnoses.
+}
+\details{
+This function calculates key summary statistics for PCL-5 data:
+* Mean total score (severity indicator)
+* Standard deviation of total scores (variability in severity)
+* Count of positive PTSD diagnoses (prevalence in the sample)
+}
+\examples{
+# Create sample data
+sample_data <- data.frame(
+  total = sample(0:80, 100, replace = TRUE),
+  PTSD_Diagnosis = sample(c(TRUE, FALSE), 100, replace = TRUE)
+)
+
+# Generate summary statistics
+summary_stats <- summarize_ptsd(sample_data)
+print(summary_stats)
+
 }

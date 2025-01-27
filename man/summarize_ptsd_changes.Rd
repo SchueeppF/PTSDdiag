@@ -2,19 +2,62 @@
 % Please edit documentation in R/helping_functions.R
 \name{summarize_ptsd_changes}
 \alias{summarize_ptsd_changes}
-\title{Summarize changes in diagnostic metrics
-when comparing different diagnostic criteria}
+\title{Summarize changes in PTSD diagnostic metrics}
 \usage{
 summarize_ptsd_changes(data)
 }
 \arguments{
-\item{data}{A dataframe with columns showing whether the diagnosis is
-fulfilled under certain diagnostic criteria}
+\item{data}{A dataframe where:
+* Each column represents a different diagnostic criterion
+* Must include a column named "PTSD_orig" as the baseline criterion
+* Values are logical (TRUE/FALSE) indicating whether PTSD criteria are met
+* Each row represents one case/participant}
 }
 \value{
-Summary statistic for the different diagnostic criteria
+A dataframe containing the following columns for each diagnostic criterion:
+  * column: Name of the diagnostic criterion
+  * diagnosed: Number of cases diagnosed as PTSD
+  * non_diagnosed: Number of cases not diagnosed as PTSD
+  * diagnosed_percent: Percentage of cases diagnosed
+  * non_diagnosed_percent: Percentage of cases not diagnosed
+  * newly_diagnosed: Cases diagnosed under new but not baseline criterion
+  * newly_nondiagnosed: Cases diagnosed under baseline but not new criterion
+  * true_positive: Cases diagnosed under both criteria
+  * true_negative: Cases not diagnosed under either criterion
+  * true_cases: Sum of true positives and true negatives
+  * false_cases: Sum of newly diagnosed and newly non-diagnosed
+  * sensitivity, specificity, ppv, npv: Standard diagnostic accuracy metrics
 }
 \description{
-Summarize changes in diagnostic metrics
-when comparing different diagnostic criteria
+Compares different PTSD diagnostic criteria by calculating diagnostic accuracy
+metrics and changes in diagnosis status relative to a baseline criterion.
+
+#' @details
+The function calculates multiple diagnostic metrics comparing each diagnostic
+criterion to a baseline criterion (PTSD_orig):
+
+Basic counts:
+* Number and percentage of diagnosed/non-diagnosed cases per criterion
+* Number of newly diagnosed and newly non-diagnosed cases
+* True positive and true negative cases
+
+Diagnostic accuracy metrics:
+* Sensitivity: Proportion of true PTSD cases correctly identified
+* Specificity: Proportion of non-PTSD cases correctly identified
+* PPV (Positive Predictive Value): Probability that a positive diagnosis is correct
+* NPV (Negative Predictive Value): Probability that a negative diagnosis is correct
+}
+\examples{
+# Create sample diagnostic data
+set.seed(123)
+n_cases <- 100
+sample_data <- data.frame(
+  PTSD_orig = sample(c(TRUE, FALSE), n_cases, replace = TRUE),
+  PTSD_alt1 = sample(c(TRUE, FALSE), n_cases, replace = TRUE),
+  PTSD_alt2 = sample(c(TRUE, FALSE), n_cases, replace = TRUE)
+)
+
+# Calculate diagnostic metrics
+diagnostic_metrics <- summarize_ptsd_changes(sample_data)
+
 }

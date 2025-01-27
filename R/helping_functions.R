@@ -1,12 +1,47 @@
-#' Binarize data
+#' Binarize PCL-5 symptom scores
 #'
-#' Symptoms with values of 0 or 1 are considered as absent, symptom values of ≥2
-#' are considered as present
+#' @description
+#' Converts PCL-5 symptom scores from their original 0-4 scale to binary values
+#' (0/1) based on the clinical threshold for symptom presence (≥2).
 #'
-#' @param data A dataframe with values between 0-4 for each of the 20 symptoms
+#' @details
+#' The function implements the standard clinical threshold for PTSD symptom
+#' presence where:
+#' * Scores of 0-1 ("Not at all" and "A little bit") → 0 (symptom absent)
+#' * Scores of 2-4 ("Moderately" to "Extremely") → 1 (symptom present)
 #'
-#' @returns A dataframe with 0 (=absent) or 1 (=present) for each of the 20 symptoms
+#' @param data A dataframe containing exactly 20 columns with PCL-5 item scores
+#'  (output of rename_ptsd_columns). Each symptom should be scored
+#'   on a 0-4 scale where:
+#'   * 0 = Not at all
+#'   * 1 = A little bit
+#'   * 2 = Moderately
+#'   * 3 = Quite a bit
+#'   * 4 = Extremely
+#'
+#'  Note: This function should only be used with raw symptom scores before
+#'  calculating the total score, as it will convert all values in the dataframe
+#'  to 0/1, which would invalidate any total score column if present.
+#'
+#' @returns A dataframe with the same structure as input but with all symptom
+#'   scores converted to binary values:
+#'   * 0 = Symptom absent (original scores 0-1)
+#'   * 1 = Symptom present (original scores 2-4)
+#'
 #' @export
+#'
+#' @examples
+#' # Create sample data
+#' sample_data <- data.frame(
+#'   matrix(sample(0:4, 20 * 10, replace = TRUE),
+#'          nrow = 10,
+#'          ncol = 20)
+#' )
+#' colnames(sample_data) <- paste0("symptom_", 1:20)
+#'
+#' # Binarize scores
+#' binary_data <- binarize_data(sample_data)
+#' table(binary_data) # Should only show 0s and 1s
 #'
 binarize_data <- function(data) {
   # Binarize values (0,1 -> 0; 2,3,4 -> 1)
@@ -15,16 +50,54 @@ binarize_data <- function(data) {
   return(data)
 }
 
-
-#' Determine PTSD Diagnosis (binarized)
+#' Determine PTSD diagnosis based on DSM-5 criteria using binarized scores
 #'
-#' Determines PTSD on the basis of the binarized values for the 20 items
+#' @description
+#' Determines whether DSM-5 diagnostic criteria for PTSD are met using binarized
+#' symptom scores (0/1) for PCL-5 items. This is an alternative to
+#' determine_ptsd_diagnosis() that works with pre-binarized data.
 #'
-#' @param data A dataframe with raw symptom scores of the 20 symptoms
+#' @details
+#' The function applies the DSM-5 diagnostic criteria for PTSD using binary
+#' indicators of symptom presence:
+#' * Criterion B (Intrusion): At least 1 present symptom from items 1-5
+#' * Criterion C (Avoidance): At least 1 present symptom from items 6-7
+#' * Criterion D (Negative alterations in cognitions and mood):
+#'   At least 2 present symptoms from items 8-14
+#' * Criterion E (Alterations in arousal and reactivity):
+#'   At least 2 present symptoms from items 15-20
 #'
-#' @returns A dataframe with one column
-#' indicating whether diagnostic criteria are met
+#' @param data A dataframe containing exactly 20 columns of PCL-5 item scores
+#'   (output of rename_ptsd_columns) named symptom_1 to symptom_20. Each symptom
+#'   should be scored on a 0-4 scale where:
+#'   * 0 = Not at all
+#'   * 1 = A little bit
+#'   * 2 = Moderately
+#'   * 3 = Quite a bit
+#'   * 4 = Extremely
+#'
+#' Note: This function should only be used with raw symptom scores (output of
+#' rename_ptsd_columns) and not with data containing a total score column, as
+#' the internal binarization process would invalidate the total score.
+#'
+#' @returns A dataframe with a single column "PTSD_orig" containing TRUE/FALSE
+#'   values indicating whether DSM-5 diagnostic criteria are met based on
+#'   binarized scores
+#'
 #' @export
+#'
+#' @examples
+#' # Create sample data
+#' sample_data <- data.frame(
+#'   matrix(sample(0:4, 20 * 10, replace = TRUE),
+#'          nrow = 10,
+#'          ncol = 20)
+#' )
+#' colnames(sample_data) <- paste0("symptom_", 1:20)
+#'
+#' # Get diagnosis using binarized approach
+#' diagnosis_results <- create_ptsd_diagnosis_binarized(sample_data)
+#' table(diagnosis_results$PTSD_orig)
 #'
 create_ptsd_diagnosis_binarized <- function(data) {
   check_ptsd_criteria <- function(symptoms) {
@@ -40,17 +113,64 @@ create_ptsd_diagnosis_binarized <- function(data) {
   # Check PTSD criteria for each row
   ptsd_results <- apply(binarized_data, 1, check_ptsd_criteria)
 
-  return(data.frame(PTSD_all = ptsd_results))
+  return(data.frame(PTSD_orig = ptsd_results))
 }
 
-#' Summarize changes in diagnostic metrics
-#' when comparing different diagnostic criteria
+#' Summarize changes in PTSD diagnostic metrics
 #'
-#' @param data A dataframe with columns showing whether the diagnosis is
-#' fulfilled under certain diagnostic criteria
+#' @description
+#' Compares different PTSD diagnostic criteria by calculating diagnostic accuracy
+#' metrics and changes in diagnosis status relative to a baseline criterion.
 #'
-#' @returns Summary statistic for the different diagnostic criteria
+#' #' @details
+#' The function calculates multiple diagnostic metrics comparing each diagnostic
+#' criterion to a baseline criterion (PTSD_orig):
+#'
+#' Basic counts:
+#' * Number and percentage of diagnosed/non-diagnosed cases per criterion
+#' * Number of newly diagnosed and newly non-diagnosed cases
+#' * True positive and true negative cases
+#'
+#' Diagnostic accuracy metrics:
+#' * Sensitivity: Proportion of true PTSD cases correctly identified
+#' * Specificity: Proportion of non-PTSD cases correctly identified
+#' * PPV (Positive Predictive Value): Probability that a positive diagnosis is correct
+#' * NPV (Negative Predictive Value): Probability that a negative diagnosis is correct
+#'
+#' @param data A dataframe where:
+#'   * Each column represents a different diagnostic criterion
+#'   * Must include a column named "PTSD_orig" as the baseline criterion
+#'   * Values are logical (TRUE/FALSE) indicating whether PTSD criteria are met
+#'   * Each row represents one case/participant
+#'
+#' @returns A dataframe containing the following columns for each diagnostic criterion:
+#'   * column: Name of the diagnostic criterion
+#'   * diagnosed: Number of cases diagnosed as PTSD
+#'   * non_diagnosed: Number of cases not diagnosed as PTSD
+#'   * diagnosed_percent: Percentage of cases diagnosed
+#'   * non_diagnosed_percent: Percentage of cases not diagnosed
+#'   * newly_diagnosed: Cases diagnosed under new but not baseline criterion
+#'   * newly_nondiagnosed: Cases diagnosed under baseline but not new criterion
+#'   * true_positive: Cases diagnosed under both criteria
+#'   * true_negative: Cases not diagnosed under either criterion
+#'   * true_cases: Sum of true positives and true negatives
+#'   * false_cases: Sum of newly diagnosed and newly non-diagnosed
+#'   * sensitivity, specificity, ppv, npv: Standard diagnostic accuracy metrics
+#'
 #' @export
+#'
+#' @examples
+#' # Create sample diagnostic data
+#' set.seed(123)
+#' n_cases <- 100
+#' sample_data <- data.frame(
+#'   PTSD_orig = sample(c(TRUE, FALSE), n_cases, replace = TRUE),
+#'   PTSD_alt1 = sample(c(TRUE, FALSE), n_cases, replace = TRUE),
+#'   PTSD_alt2 = sample(c(TRUE, FALSE), n_cases, replace = TRUE)
+#' )
+#'
+#' # Calculate diagnostic metrics
+#' diagnostic_metrics <- summarize_ptsd_changes(sample_data)
 #'
 summarize_ptsd_changes <- function(data) {
   # Initialize results dataframe
@@ -61,8 +181,8 @@ summarize_ptsd_changes <- function(data) {
     stringsAsFactors = FALSE
   )
 
-  # Calculate changes compared to PTSD_all
-  baseline <- data$PTSD_all
+  # Calculate changes compared to PTSD_orig
+  baseline <- data$PTSD_orig
   # For each column
   for(col in names(data)) {
     current <- data[[col]]
@@ -92,14 +212,47 @@ summarize_ptsd_changes <- function(data) {
   return(summary_stats)
 }
 
-#' Create readable summary of changes in diagnostic metrics when comparing
-#' different diagnostic criteria
+#' Create readable summary of PTSD diagnostic changes
 #'
-#' @param summary_stats Resulting dataframe of function summarize_ptsd_changes
+#' @description
+#' Formats the output of summarize_ptsd_changes() into a more readable table
+#' with proper labels and formatting of percentages and metrics.
 #'
-#' @returns A formatted dataframe with summary statistic for the
-#' different diagnostic criteria
+#' @details
+#' Reformats the diagnostic metrics into a presentation-ready format:
+#' * Combines counts with percentages for diagnosed/non-diagnosed cases
+#' * Rounds diagnostic accuracy metrics to 4 decimal places
+#' * Provides clear column headers for all metrics
+#'
+#' @param summary_stats A dataframe output from summarize_ptsd_changes()
+#'   containing raw diagnostic metrics and counts
+#'
+#' @returns A formatted dataframe with the following columns:
+#'   * Scenario: Name of the diagnostic criterion
+#'   * Total Diagnosed: Count and percentage of diagnosed cases
+#'   * Total Non-Diagnosed: Count and percentage of non-diagnosed cases
+#'   * True Positive: Count of cases diagnosed under both criteria
+#'   * True Negative: Count of cases not diagnosed under either criterion
+#'   * Newly Diagnosed: Count of new positive diagnoses
+#'   * Newly Non-Diagnosed: Count of new negative diagnoses
+#'   * True Cases: Total correctly classified cases
+#'   * False Cases: Total misclassified cases
+#'   * Sensitivity, Specificity, PPV, NPV: Diagnostic accuracy metrics (4 decimals)
+#'
 #' @export
+#'
+#' @examples
+#' # Using the output from summarize_ptsd_changes
+#' n_cases <- 100
+#' sample_data <- data.frame(
+#'   PTSD_orig = sample(c(TRUE, FALSE), n_cases, replace = TRUE),
+#'   PTSD_alt1 = sample(c(TRUE, FALSE), n_cases, replace = TRUE)
+#' )
+#'
+#' # Generate and format summary
+#' diagnostic_metrics <- summarize_ptsd_changes(sample_data)
+#' readable_summary <- create_readable_summary(diagnostic_metrics)
+#' print(readable_summary)
 #'
 create_readable_summary <- function(summary_stats) {
   data.frame(

@@ -1,18 +1,48 @@
-#' Find best three six-symptom-combinations for non-hierarchical PTSD diagnosis
+#' Find optimal non-hierarchical six-symptom combinations for PTSD diagnosis
 #'
-#' Analyzes PTSD symptom data to find the three best six-symptom-combinations,
-#' where at least four symptoms need to be present for diagnosis,
-#' regardless of which cluster they belong to
+#' @description
+#' Identifies the three best six-symptom combinations for PTSD diagnosis
+#' where any four symptoms must be present, regardless of their cluster membership.
+#' This function implements a simplified diagnostic approach compared to the full
+#' DSM-5 criteria.
 #'
-#' @param data A dataframe with 20 columns for the 20 symptoms with
-#' non-binarized values (columns named symptom_1 to symptom_20)
-#' @param score_by Method to select the best six-symptom-combinations
-#' (by minimizing the "newly_nondiagnosed" or by minimizing the "false_cases")
+#' @details
+#' The function:
+#' 1. Tests all possible combinations of 6 symptoms from the 20 PCL-5 items
+#' 2. Requires 4 symptoms to be present (≥2 on original 0-4 scale) for diagnosis
+#' 3. Identifies the three combinations that best match the original DSM-5 diagnosis
+#'
+#' Optimization can be based on either:
+#' * Minimizing false cases (both false positives and false negatives)
+#' * Minimizing only false negatives (newly non-diagnosed cases)
+#'
+#' The symptom clusters in PCL-5 are:
+#' * Items 1-5: Intrusion symptoms (Criterion B)
+#' * Items 6-7: Avoidance symptoms (Criterion C)
+#' * Items 8-14: Negative alterations in cognitions and mood (Criterion D)
+#' * Items 15-20: Alterations in arousal and reactivity (Criterion E)
+#'
+#' @param data A dataframe containing exactly 20 columns with PCL-5 item scores
+#'   (output of rename_ptsd_columns). Each symptom should be scored on a 0-4
+#'   scale where:
+#'   * 0 = Not at all
+#'   * 1 = A little bit
+#'   * 2 = Moderately
+#'   * 3 = Quite a bit
+#'   * 4 = Extremely
+#'
+#' @param score_by Character string specifying optimization criterion:
+#'   * "false_cases": Minimize total misclassifications
+#'   * "newly_nondiagnosed": Minimize false negatives only
 #'
 #' @returns A list containing:
-#'  best combinations: List of three vectors containing the symptom numbers of best combinations
-#'  diagnosis comparison: data frame comparing original and new diagnostic criteria
-#'  summary: datatable with formatted summary statistics
+#'   * best_symptoms: List of three vectors, each containing six symptom numbers
+#'     representing the best combinations found
+#'   * diagnosis_comparison: Dataframe comparing original DSM-5 diagnosis with
+#'     diagnoses based on the three best combinations
+#'   * summary: Interactive datatable (DT) showing diagnostic accuracy metrics
+#'     for each combination
+#'
 #' @export
 #'
 #' @importFrom utils combn
@@ -23,16 +53,17 @@
 #' ptsd_data <- data.frame(matrix(sample(0:4, 200, replace=TRUE), ncol=20))
 #' names(ptsd_data) <- paste0("symptom_", 1:20)
 #'
-#' results <- analyze_best_six_symptoms_four_required(ptsd_data)
+#' # Find best combinations minimizing false cases
+#' results <- analyze_best_six_symptoms_four_required(ptsd_data, score_by = "false_cases")
 #'
-#' # Access best symptom combinations
-#' results$best_symptoms
+#' # Find best combinations minimizing false negatives
+#' results_min_fn <- analyze_best_six_symptoms_four_required(ptsd_data,
+#' score_by = "newly_nondiagnosed")
 #'
-#' # View formatted summary table
-#' results$summary
-#'
-#' # Access raw comparison data
-#' results$diagnosis_comparison
+#' # Access results
+#' results$best_symptoms # Get symptom numbers
+#' results$summary # View interactive summary table
+#' results$diagnosis_comparison # View raw comparison data
 #'
 analyze_best_six_symptoms_four_required <- function(data, score_by = "false_cases") {
   # Validate scoring method
@@ -42,7 +73,7 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
   }
 
   # Get baseline results and binarize data
-  baseline_results <- create_ptsd_diagnosis_binarized(data)$PTSD_all
+  baseline_results <- create_ptsd_diagnosis_binarized(data)$PTSD_orig
   binarized_data <- binarize_data(data)
 
   # Helper function to find best combinations
@@ -106,7 +137,7 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 
   # Create comparison dataframe
   comparison_df <- data.frame(
-    PTSD_all = baseline_results,
+    PTSD_orig = baseline_results,
     sapply(1:3, function(i) top_combinations[[i]]$diagnoses)
   )
   names(comparison_df)[2:4] <- sapply(1:3, function(i) {
@@ -128,21 +159,52 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 
 
 
-#' Find best three six-symptom-combinations for hierarchical PTSD diagnosis
+#' Find optimal hierarchical six-symptom combinations for PTSD diagnosis
 #'
-#' Analyzes PTSD symptom data to find the three best six-symptom-combinations,
-#' where at least four symptoms need to be present for diagnosis,
-#' one from each cluster
+#' @description
+#' Identifies the three best six-symptom combinations for PTSD diagnosis
+#' where four symptoms must be present and must include at least one symptom from
+#' each DSM-5 criterion cluster. This approach maintains the hierarchical structure
+#' of PTSD diagnosis while reducing the total number of required symptoms.
 #'
-#' @param data A dataframe with 20 columns for the 20 symptoms with
-#' non-binarized values (columns named symptom_1 to symptom_20)
-#' @param score_by Method to select the best six-symptom-combinations
-#' (by minimizing the "newly_nondiagnosed" or by minimizing the "false_cases")
+#' @details
+#' The function:
+#' 1. Generates valid combinations ensuring representation from all clusters
+#' 2. Requires 4 symptoms to be present (≥2 on original 0-4 scale) for diagnosis
+#' 3. Validates that present symptoms include at least one from each cluster
+#' 4. Identifies the three combinations that best match the original DSM-5 diagnosis
+#'
+#' DSM-5 PTSD symptom clusters:
+#' * Cluster 1 (B) - Intrusion: Items 1-5
+#' * Cluster 2 (C) - Avoidance: Items 6-7
+#' * Cluster 3 (D) - Negative alterations in cognitions and mood: Items 8-14
+#' * Cluster 4 (E) - Alterations in arousal and reactivity: Items 15-20
+#'
+#' Optimization can be based on either:
+#' * Minimizing false cases (both false positives and false negatives)
+#' * Minimizing only false negatives (newly non-diagnosed cases)
+#'
+#' @param data A dataframe containing exactly 20 columns with PCL-5 item scores
+#'   (output of rename_ptsd_columns). Each symptom should be scored on a 0-4
+#'   scale where:
+#'   * 0 = Not at all
+#'   * 1 = A little bit
+#'   * 2 = Moderately
+#'   * 3 = Quite a bit
+#'   * 4 = Extremely
+#'
+#' @param score_by Character string specifying optimization criterion:
+#'   * "false_cases": Minimize total misclassifications
+#'   * "newly_nondiagnosed": Minimize false negatives only
 #'
 #' @returns A list containing:
-#'  best combinations: List of three vectors containing the symptom numbers of best combinations
-#'  diagnosis comparison: data frame comparing original and new diagnostic criteria
-#'  summary: datatable with formatted summary statistics
+#'   * best_symptoms: List of three vectors, each containing six symptom numbers
+#'     representing the best combinations found
+#'   * diagnosis_comparison: Dataframe comparing original DSM-5 diagnosis with
+#'     diagnoses based on the three best combinations
+#'   * summary: Interactive datatable (DT) showing diagnostic accuracy metrics
+#'     for each combination
+#'
 #' @export
 #'
 #' @importFrom utils combn
@@ -153,16 +215,18 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 #' ptsd_data <- data.frame(matrix(sample(0:4, 200, replace=TRUE), ncol=20))
 #' names(ptsd_data) <- paste0("symptom_", 1:20)
 #'
-#' results <- analyze_best_six_symptoms_four_required_clusters(ptsd_data)
+#' # Find best hierarchical combinations minimizing false cases
+#' results <- analyze_best_six_symptoms_four_required_clusters(ptsd_data, score_by = "false_cases")
 #'
-#' # Access best symptom combinations
-#' results$best_symptoms
+#' # Find best hierarchical combinations minimizing false negatives
+#' results_min_fn <- analyze_best_six_symptoms_four_required_clusters(ptsd_data,
+#' score_by = "newly_nondiagnosed")
 #'
-#' # View formatted summary table
-#' results$summary
+#' # Access results
+#' results$best_symptoms # Get symptom numbers
+#' results$summary # View interactive summary table
+#' results$diagnosis_comparison # View raw comparison data
 #'
-#' # Access raw comparison data
-#' results$diagnosis_comparison
 analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "false_cases") {
   # Validate scoring method
   valid_scoring <- c("false_cases", "newly_nondiagnosed")
@@ -171,7 +235,7 @@ analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "f
   }
 
   # Get baseline results and binarize data
-  baseline_results <- create_ptsd_diagnosis_binarized(data)$PTSD_all
+  baseline_results <- create_ptsd_diagnosis_binarized(data)$PTSD_orig
   binarized_data <- as.matrix(binarize_data(data))
 
   # Define clusters
@@ -298,7 +362,7 @@ analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "f
 
   # Create comparison dataframe
   comparison_df <- data.frame(
-    PTSD_all = baseline_results,
+    PTSD_orig = baseline_results,
     sapply(1:3, function(i) top_combinations[[i]]$diagnoses)
   )
   names(comparison_df)[2:4] <- sapply(1:3, function(i) {
