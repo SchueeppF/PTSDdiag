@@ -20,7 +20,7 @@ Description: A comprehensive toolkit for analyzing and optimizing PTSD
     optimal subsets of PCL-5 items that maintain diagnostic accuracy while 
     reducing assessment burden. It includes tools for both hierarchical 
     (cluster-based) and non-hierarchical symptom combinations, calculation of 
-    diagnostic metrics, and comparison with standard DSM-5 criteria. 
+    diagnostic metrics, and comparison with standard DSM-5 criteria.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -32,3 +32,5 @@ Imports:
     rlang,
     stats,
     utils
+Depends: 
+    R (>= 2.10)
