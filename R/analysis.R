@@ -380,5 +380,3 @@ analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "f
     )
   ))
 }
-
-

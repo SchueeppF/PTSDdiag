@@ -86,19 +86,19 @@ calculate_ptsd_total <- function(data) {
 #'          ncol = 20)
 #' )
 #' colnames(sample_data1) <- paste0("symptom_", 1:20)
-#' diagnosed_data1 <- determine_ptsd_diagnosis(sample_data1)
+#' diagnosed_data1 <- create_ptsd_diagnosis_nonbinarized(sample_data1)
 #'
 #' # Check diagnosis results
 #' table(diagnosed_data1$PTSD_Diagnosis)
 #'
 #' # Example with output from calculate_ptsd_total
 #' sample_data2 <- calculate_ptsd_total(sample_data1)
-#' diagnosed_data2 <- determine_ptsd_diagnosis(sample_data2)
+#' diagnosed_data2 <- create_ptsd_diagnosis_nonbinarized(sample_data2)
 #'
 #' # Check diagnosis results
 #' table(diagnosed_data2$PTSD_Diagnosis)
 #'
-determine_ptsd_diagnosis <- function(data) {
+create_ptsd_diagnosis_nonbinarized <- function(data) {
   criteria <- list(
     A = rowSums(data[, paste0("symptom_", 1:5)] >= 2) >= 1,
     B = rowSums(data[, paste0("symptom_", 6:7)] >= 2) >= 1,
