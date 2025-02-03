@@ -38,6 +38,23 @@
 #' print(scores_with_total$total)
 #'
 calculate_ptsd_total <- function(data) {
+  # Validate column names
+  expected_names <- paste0("symptom_", 1:20)
+  if (!all(expected_names %in% colnames(data))) {
+    stop("Data must contain columns named 'symptom_1' through 'symptom_20'")
+  }
+
+  # Validate data type and range
+  if (!all(vapply(data[expected_names], is.numeric, logical(1)))) {
+    stop("All symptom columns must contain numeric values")
+  }
+
+  invalid_values <- !all(sapply(data[expected_names], function(x)
+    all(x >= 0 & x <= 4 & x == floor(x))))
+  if (invalid_values) {
+    stop("All symptom values must be integers between 0 and 4")
+  }
+
   data %>%
     dplyr::mutate(total = rowSums(dplyr::select(data,paste0("symptom_", 1:20))))
 }
@@ -99,6 +116,32 @@ calculate_ptsd_total <- function(data) {
 #' table(diagnosed_data2$PTSD_Diagnosis)
 #'
 create_ptsd_diagnosis_nonbinarized <- function(data) {
+  # Validate column names
+  expected_cols <- paste0("symptom_", 1:20)
+  if (!all(expected_cols %in% colnames(data))) {
+    stop("Data must contain columns named 'symptom_1' through 'symptom_20'")
+  }
+
+  # Validate that columns are numeric
+  symptom_cols <- data[, expected_cols]
+  if (!all(vapply(symptom_cols, is.numeric, logical(1)))) {
+    stop("All symptom columns must contain numeric values")
+  }
+
+  # Validate value range (0-4) and check for missing values
+  invalid_values <- !all(sapply(symptom_cols, function(x)
+    all(x >= 0 & x <= 4 & x == floor(x) & !is.na(x))))
+  if (invalid_values) {
+    stop("All symptom values must be integers between 0 and 4 with no missing values")
+  }
+
+  # Check if 'total' column exists and is numeric (since function can accept output from calculate_ptsd_total)
+  if ("total" %in% colnames(data)) {
+    if (!is.numeric(data$total)) {
+      stop("If present, 'total' column must contain numeric values")
+    }
+  }
+
   criteria <- list(
     A = rowSums(data[, paste0("symptom_", 1:5)] >= 2) >= 1,
     B = rowSums(data[, paste0("symptom_", 6:7)] >= 2) >= 1,
@@ -109,9 +152,6 @@ create_ptsd_diagnosis_nonbinarized <- function(data) {
   data$PTSD_Diagnosis <- Reduce(`&`, criteria)
   return(data)
 }
-
-
-
 
 
 #' Summarize PTSD scores and diagnoses
@@ -154,6 +194,36 @@ create_ptsd_diagnosis_nonbinarized <- function(data) {
 #' print(summary_stats)
 #'
 summarize_ptsd <- function(data) {
+  # Check if required columns exist
+  if (!all(c("total", "PTSD_Diagnosis") %in% colnames(data))) {
+    stop("Data must contain both 'total' and 'PTSD_Diagnosis' columns")
+  }
+
+  # Validate total column
+  if (!is.numeric(data$total)) {
+    stop("'total' column must contain numeric values")
+  }
+
+  # Check for missing values in total
+  if (any(is.na(data$total))) {
+    stop("'total' column contains missing values")
+  }
+
+  # Validate total score range (should be 0-80 as each item is 0-4 and there are 20 items)
+  if (any(data$total < 0 | data$total > 80)) {
+    stop("'total' column contains invalid values (must be between 0 and 80)")
+  }
+
+  # Validate PTSD_Diagnosis column
+  if (!is.logical(data$PTSD_Diagnosis)) {
+    stop("'PTSD_Diagnosis' column must contain logical (TRUE/FALSE) values")
+  }
+
+  # Check for missing values in diagnosis
+  if (any(is.na(data$PTSD_Diagnosis))) {
+    stop("'PTSD_Diagnosis' column contains missing values")
+  }
+
   data %>%
     dplyr::summarise(
       mean_total = mean(.data$total),

@@ -44,6 +44,15 @@
 #' table(binary_data) # Should only show 0s and 1s
 #'
 binarize_data <- function(data) {
+  # Validate input data
+    if (!all(vapply(data, is.numeric, logical(1)))) {
+      stop("All columns must contain numeric values")
+    }
+
+    if (any(is.na(data))) {
+      stop("Data contains missing values (NA)")
+    }
+
   # Binarize values (0,1 -> 0; 2,3,4 -> 1)
   data[data <= 1] <- 0
   data[data >= 2] <- 1
@@ -100,6 +109,39 @@ binarize_data <- function(data) {
 #' table(diagnosis_results$PTSD_orig)
 #'
 create_ptsd_diagnosis_binarized <- function(data) {
+  # Validate number of columns
+  if (ncol(data) != 20) {
+    stop("Data must contain exactly 20 columns (one for each PCL-5 item)")
+  }
+
+  # Validate column names
+  expected_cols <- paste0("symptom_", 1:20)
+  if (!all(expected_cols %in% colnames(data))) {
+    stop("Data must contain columns named 'symptom_1' through 'symptom_20'")
+  }
+
+  # Check if total column exists (warning)
+  if ("total" %in% colnames(data)) {
+    warning("'total' column detected. This function should only be used with raw symptom scores.")
+  }
+
+  # Validate input data type
+  if (!all(vapply(data[expected_cols], is.numeric, logical(1)))) {
+    stop("All symptom columns must contain numeric values")
+  }
+
+  # Check for missing values
+  if (any(is.na(data[expected_cols]))) {
+    stop("Data contains missing values (NA)")
+  }
+
+  # Validate value ranges and check for integers
+  invalid_values <- !all(sapply(data[expected_cols], function(x)
+    all(x >= 0 & x <= 4 & x == floor(x))))
+  if (invalid_values) {
+    stop("All symptom values must be integers between 0 and 4")
+  }
+
   check_ptsd_criteria <- function(symptoms) {
     criterion_1 <- any(symptoms[1:5] == 1)
     criterion_2 <- any(symptoms[6:7] == 1)
@@ -173,6 +215,36 @@ create_ptsd_diagnosis_binarized <- function(data) {
 #' diagnostic_metrics <- summarize_ptsd_changes(sample_data)
 #'
 summarize_ptsd_changes <- function(data) {
+  # Check if data is a dataframe
+  if (!is.data.frame(data)) {
+    stop("Input must be a dataframe")
+  }
+
+  # Check if PTSD_orig column exists
+  if (!"PTSD_orig" %in% names(data)) {
+    stop("Data must contain a column named 'PTSD_orig' as baseline criterion")
+  }
+
+  # Check if all columns contain logical values
+  if (!all(sapply(data, is.logical))) {
+    stop("All columns must contain logical (TRUE/FALSE) values")
+  }
+
+  # Check for missing values
+  if (any(sapply(data, anyNA))) {
+    stop("Data contains missing values (NA)")
+  }
+
+  # Check if data has at least one row
+  if (nrow(data) == 0) {
+    stop("Data must contain at least one row")
+  }
+
+  # Check if data has at least two columns (need baseline plus at least one comparison)
+  if (ncol(data) < 2) {
+    stop("Data must contain at least two columns (PTSD_orig plus at least one comparison criterion)")
+  }
+
   # Initialize results dataframe
   summary_stats <- data.frame(
     column = names(data),
@@ -255,6 +327,55 @@ summarize_ptsd_changes <- function(data) {
 #' print(readable_summary)
 #'
 create_readable_summary <- function(summary_stats) {
+  # Check if input is a dataframe
+  if (!is.data.frame(summary_stats)) {
+    stop("Input must be a dataframe")
+  }
+
+  # Define required columns
+  required_cols <- c("column", "diagnosed", "non_diagnosed",
+                     "diagnosed_percent", "non_diagnosed_percent",
+                     "true_positive", "true_negative",
+                     "newly_diagnosed", "newly_nondiagnosed",
+                     "true_cases", "false_cases",
+                     "sensitivity", "specificity", "ppv", "npv")
+
+  # Check if all required columns are present
+  missing_cols <- setdiff(required_cols, names(summary_stats))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns: ", paste(missing_cols, collapse = ", "))
+  }
+
+  # Validate numeric columns
+  numeric_cols <- c("diagnosed", "non_diagnosed",
+                    "diagnosed_percent", "non_diagnosed_percent",
+                    "true_positive", "true_negative",
+                    "newly_diagnosed", "newly_nondiagnosed",
+                    "true_cases", "false_cases",
+                    "sensitivity", "specificity", "ppv", "npv")
+
+  for (col in numeric_cols) {
+    if (!is.numeric(summary_stats[[col]])) {
+      stop(paste0("Column '", col, "' must contain numeric values"))
+    }
+    if (any(is.na(summary_stats[[col]]))) {
+      stop(paste0("Column '", col, "' contains missing values"))
+    }
+  }
+
+  # Validate value ranges for percentages and metrics
+  if (any(summary_stats$diagnosed_percent < 0 | summary_stats$diagnosed_percent > 100) ||
+      any(summary_stats$non_diagnosed_percent < 0 | summary_stats$non_diagnosed_percent > 100)) {
+    stop("Percentage values must be between 0 and 100")
+  }
+
+  if (any(summary_stats$sensitivity < 0 | summary_stats$sensitivity > 1) ||
+      any(summary_stats$specificity < 0 | summary_stats$specificity > 1) ||
+      any(summary_stats$ppv < 0 | summary_stats$ppv > 1) ||
+      any(summary_stats$npv < 0 | summary_stats$npv > 1)) {
+    stop("Diagnostic metrics (sensitivity, specificity, PPV, NPV) must be between 0 and 1")
+  }
+
   data.frame(
     Scenario = summary_stats$column,
     `Total Diagnosed` = paste0(summary_stats$diagnosed,

@@ -42,6 +42,25 @@
 #' colnames(renamed_data)  # Shows new column names
 #'
 rename_ptsd_columns <- function(data) {
+  # Validate number of columns
+  if (ncol(data) != 20) {
+    stop("Data must contain exactly 20 columns (one for each PCL-5 item)")
+  }
+  # Check for missing values
+  if (any(is.na(data))) {
+    stop("Data contains missing values (NA). All PCL-5 items must be rated")
+  }
+
+  # Validate data type and range
+  if (!all(vapply(data, is.numeric, logical(1)))) {
+    stop("All columns must contain numeric values")
+  }
+
+  invalid_values <- !all(sapply(data, function(x) all(x >= 0 & x <= 4 & x == floor(x))))
+  if (invalid_values) {
+    stop("All values must be integers between 0 and 4")
+  }
+
   data %>%
       rename_with(~ paste0("symptom_", 1:20))
 }

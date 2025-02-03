@@ -1,5 +1,5 @@
 test_that("binarize_data works correctly", {
-  # Create test data with known values
+  # Test case 1: Basic functionality with small dataset
   test_data <- data.frame(
     symptom_1 = c(0, 1, 2, 3, 4),
     symptom_2 = c(1, 2, 3, 4, 0)
@@ -11,7 +11,7 @@ test_that("binarize_data works correctly", {
   expect_equal(test_data_binarized$symptom_1, c(0, 0, 1, 1, 1))
   expect_equal(test_data_binarized$symptom_2, c(0, 1, 1, 1, 0))
 
-  # Test all possible values
+  # Test case 2: All possible values
   all_values <- data.frame(x = 0:4)
   binary_result <- binarize_data(all_values)
   expect_equal(binary_result$x, c(0, 0, 1, 1, 1))

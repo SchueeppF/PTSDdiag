@@ -66,10 +66,53 @@
 #' results$diagnosis_comparison # View raw comparison data
 #'
 analyze_best_six_symptoms_four_required <- function(data, score_by = "false_cases") {
+  # Validate input is a dataframe
+  if (!is.data.frame(data)) {
+    stop("Input must be a dataframe")
+  }
+
+  # Validate number of columns
+  if (ncol(data) != 20) {
+    stop("Data must contain exactly 20 columns (one for each PCL-5 item)")
+  }
+
+  # Validate column names
+  expected_cols <- paste0("symptom_", 1:20)
+  if (!all(expected_cols %in% colnames(data))) {
+    stop("Data must contain columns named 'symptom_1' through 'symptom_20'")
+  }
+
+  # Check for total column (warning)
+  if ("total" %in% colnames(data)) {
+    warning("'total' column detected. This function should only be used with raw symptom scores.")
+  }
+
+  # Validate data type
+  if (!all(vapply(data[expected_cols], is.numeric, logical(1)))) {
+    stop("All symptom columns must contain numeric values")
+  }
+
+  # Check for missing values
+  if (any(is.na(data[expected_cols]))) {
+    stop("Data contains missing values (NA)")
+  }
+
+  # Validate value ranges and check for integers
+  invalid_values <- !all(sapply(data[expected_cols], function(x)
+    all(x >= 0 & x <= 4 & x == floor(x))))
+  if (invalid_values) {
+    stop("All symptom values must be integers between 0 and 4")
+  }
+
   # Validate scoring method
   valid_scoring <- c("false_cases", "newly_nondiagnosed")
   if (!score_by %in% valid_scoring) {
     stop("score_by must be one of: ", paste(valid_scoring, collapse = ", "))
+  }
+
+  # Validate minimum number of rows
+  if (nrow(data) < 1) {
+    stop("Data must contain at least one row")
   }
 
   # Get baseline results and binarize data
@@ -158,7 +201,6 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 
 
 
-
 #' Find optimal hierarchical six-symptom combinations for PTSD diagnosis
 #'
 #' @description
@@ -228,10 +270,53 @@ analyze_best_six_symptoms_four_required <- function(data, score_by = "false_case
 #' results$diagnosis_comparison # View raw comparison data
 #'
 analyze_best_six_symptoms_four_required_clusters <- function(data, score_by = "false_cases") {
+  # Validate input is a dataframe
+  if (!is.data.frame(data)) {
+    stop("Input must be a dataframe")
+  }
+
+  # Validate number of columns
+  if (ncol(data) != 20) {
+    stop("Data must contain exactly 20 columns (one for each PCL-5 item)")
+  }
+
+  # Validate column names
+  expected_cols <- paste0("symptom_", 1:20)
+  if (!all(expected_cols %in% colnames(data))) {
+    stop("Data must contain columns named 'symptom_1' through 'symptom_20'")
+  }
+
+  # Check for total column (warning)
+  if ("total" %in% colnames(data)) {
+    warning("'total' column detected. This function should only be used with raw symptom scores.")
+  }
+
+  # Validate data type
+  if (!all(vapply(data[expected_cols], is.numeric, logical(1)))) {
+    stop("All symptom columns must contain numeric values")
+  }
+
+  # Check for missing values
+  if (any(is.na(data[expected_cols]))) {
+    stop("Data contains missing values (NA)")
+  }
+
+  # Validate value ranges and check for integers
+  invalid_values <- !all(sapply(data[expected_cols], function(x)
+    all(x >= 0 & x <= 4 & x == floor(x))))
+  if (invalid_values) {
+    stop("All symptom values must be integers between 0 and 4")
+  }
+
   # Validate scoring method
   valid_scoring <- c("false_cases", "newly_nondiagnosed")
   if (!score_by %in% valid_scoring) {
     stop("score_by must be one of: ", paste(valid_scoring, collapse = ", "))
+  }
+
+  # Validate minimum number of rows
+  if (nrow(data) < 1) {
+    stop("Data must contain at least one row")
   }
 
   # Get baseline results and binarize data
