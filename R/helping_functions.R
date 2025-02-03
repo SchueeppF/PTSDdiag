@@ -270,6 +270,7 @@ create_readable_summary <- function(summary_stats) {
     `Sensitivity` = round(summary_stats$sensitivity, 4),
     `Specificity` = round(summary_stats$specificity, 4),
     `PPV` = round(summary_stats$ppv, 4),
-    `NPV` = round(summary_stats$npv, 4)
+    `NPV` = round(summary_stats$npv, 4),
+    check.names = FALSE
   )
 }

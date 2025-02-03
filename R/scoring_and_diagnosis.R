@@ -39,7 +39,7 @@
 #'
 calculate_ptsd_total <- function(data) {
   data %>%
-    dplyr::mutate(total = rowSums(dplyr::select(data, .data$symptom_1:.data$symptom_20)))
+    dplyr::mutate(total = rowSums(dplyr::select(data,paste0("symptom_", 1:20))))
 }
 
 

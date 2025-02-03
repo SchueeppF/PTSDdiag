@@ -175,9 +175,9 @@ best_combinations_hierarchical$best_symptoms
 best_combinations_hierarchical$diagnosis_comparison
 ```
  
- 3. Interactive datatable showing diagnostic accuracy metrics for each combination
+ 3. Summary table showing diagnostic accuracy metrics for each combination
 ```{r, echo=TRUE}
-best_combinations_hierarchical$summary
+print(create_readable_summary(summarize_ptsd_changes(best_combinations_hierarchical$diagnosis_comparison)))
 ```
 
 The summary table includes:
@@ -219,9 +219,9 @@ best_combinations_nonhierarchical$best_symptoms
 best_combinations_nonhierarchical$diagnosis_comparison
 ```
  
- 3. Interactive datatable showing diagnostic accuracy metrics for each combination
+ 3. Summary table showing diagnostic accuracy metrics for each combination
 ```{r, echo=TRUE}
-best_combinations_nonhierarchical$summary
+print(create_readable_summary(summarize_ptsd_changes(best_combinations_nonhierarchical$diagnosis_comparison)))
 ```
 
 # 5. Conclusion
