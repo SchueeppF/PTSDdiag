@@ -28,24 +28,24 @@ This vignette demonstrates how to use the package to:
 ## 2.1. Installing the Package
 
 This package is currently only hosted on GitHub. Installation requires the `devtools` package to be installed and loaded.
-```{r eval=FALSE, include=TRUE}
+```{r Installation, eval=FALSE, include=TRUE}
 # Install devtools if not already installed
 if (!require("devtools")) install.packages("devtools")
 
 # Install PTSDdiag
 library("devtools")
-devtools::install_github("")
+# devtools::install_github("")
 ```
 
 ## 2.2. Loading Required Packages
 
 Once the `PTSDdiag` is installed it can be loaded the usual way.
-```{r echo=TRUE, warning=FALSE}
+```{r Loading PTSDdiag, echo=TRUE, warning=FALSE}
 library("PTSDdiag")
 ```
 
 Load additional packages:
-```{r echo=TRUE, warning=FALSE}
+```{r Loading other, echo=TRUE, warning=FALSE}
 library(psych)     # For reliability analysis
 ```
 
@@ -54,7 +54,9 @@ library(psych)     # For reliability analysis
 This package includes a simulated dataset that mirrors hypothetical PCL-5-assessments. It contains 10,000 simulated patient responses, each rating 20 PTSD symptoms according to DSM-5 criteria. 
 
 **Rating Scale**
+
 Each symptom is rated on a 5-point scale: 
+
  * 0 = Not at all
  * 1 = A little bit
  * 2 = Moderately
@@ -62,27 +64,31 @@ Each symptom is rated on a 5-point scale:
  * 4 = Extremely
 
 **Symptom Clusters**
+
 The PCL-5 organizes symptoms into four distinct clusters according to DSM-5 criteria:
+ 
  * Symptoms 1-5: Criterion B (Intrusion)
  * Symptoms 6-7: Criterion C (Avoidance)
  * Symptoms 8-14: Criterion D (Negative alterations in cognitions and mood)
  * Symptoms 15-20: Criterion E (Alterations in arousal and reactivity)
  
 **Data Format Requirements**
+
 Input data must be:
+ 
  * Numeric values 0-4 only
  * No missing values
- * 20 columns (one pre symptom)
+ * 20 columns (one per symptom)
  * Row-wise observations
 
 Let's load the included sample data:
-```{r, echo=TRUE}
+```{r Loading sample data, echo=TRUE}
 # Load the sample data
 data("simulated_ptsd")
 ```
 
 and take a look at the first few rows of the sample data:
-```{r, echo=TRUE}
+```{r Displaying sample data, echo=TRUE}
 # Display first few rows
 head(simulated_ptsd)
 ```
@@ -90,13 +96,13 @@ head(simulated_ptsd)
 ## 3.2. Data Prepration
 The first step is to standardize column names for consistent analysis. 
 Before standardization, columns might have various names:
-```{r, echo=TRUE}
+```{r Column names of input data, echo=TRUE}
 #  Example of potential input formats
 names(simulated_ptsd)
 ```
 
 After standardization, columns will be named systematically:
-```{r, echo=TRUE}
+```{r Renaming columns, echo=TRUE}
 # Rename columns to standard format (symptom_1 through symptom_20)
 simulated_ptsd_renamed <- rename_ptsd_columns(simulated_ptsd)
 
@@ -106,7 +112,7 @@ names(simulated_ptsd_renamed)
 
 ## 3.3. Basic Descriptive Statistics
 We'll now process the data through several steps to calculate scores and determine diagnoses:
-```{r, echo=TRUE}
+```{r Basic Descriptive Statistics, echo=TRUE}
 # Step 1: Calculate total scores (range 0-80)
 simulated_ptsd_total <- calculate_ptsd_total(simulated_ptsd_renamed)
 
@@ -126,7 +132,7 @@ The summary statistics provide:
 
 ## 3.4. Reliability Analysis
 Cronbach's alpha is calculated to assess the internal consistency of the PCL-5:
-```{r, echo=TRUE}
+```{r Reliability Analysis, echo=TRUE}
 cronbach <- psych::alpha(simulated_ptsd_total)
 print(cronbach$total)
 ```
@@ -134,26 +140,30 @@ print(cronbach$total)
 # 4. Finding Optimal Symptom Combinations
 Now we come to the actual analysis.
 Current PTSD diagnosis requires evaluating 20 symptoms across four clusters with complex rules. Our goal is to identify simplified diagnostic criteria that:
+ 
  * Reduce the number of symptoms to evaluate (from 20 to 6)
  * Preserve the polythetic nature of the diagnosis and allow representation from each cluster, so that at least for of the evaluated six symptoms must be present for diagnosis.
  * Maintain diagnostic accuracy
 
-We would like to identify the three six-symptom combinations, which represent the group of PTSD patients the best compared to the original DSM-5 criteria. We determine these optimal six-symptom combinations under two different structural approaches (a hierarchical approach, requiring at least one symptom from each cluster, and a non-hierarchical approach, ignoring cluster membership). 
+We would like to identify the three six-symptom combinations that best represent the group of PTSD patients compared to the original DSM-5 criteria. We determine these optimal six-symptom combinations under two different structural approaches (a hierarchical approach, requiring at least one symptom from each cluster, and a non-hierarchical approach, ignoring cluster membership). 
 
 ## 4.1. Hierarchical Analysis
-First, let's find out the three optimal six-symptom combinations, of which at least four symptoms must be present for the diagnosis, whereby one symptom from each DSM-5 criterion cluster must be included. This approach maintains the hierarchical structure of PTSD diagnosis.
+First, let's find out the three optimal six-symptom combinations, of which at least four symptoms must be present for the diagnosis, where one symptom from each DSM-5 criterion cluster must be included. This approach maintains the hierarchical structure of PTSD diagnosis.
 As a reminder, these are the symptom clusters in the PCL-5:
+
  * Items 1-5: Intrusion symptoms (Criterion B)
  * Items 6-7: Avoidance symptoms (Criterion C)
  * Items 8-14: Negative alterations in cognitions and mood (Criterion D)
  * Items 15-20: Alterations in arousal and reactivity (Criterion E)
 
 The definition of the “optimal combination" can be determined with the score_by argument. Optimization can be based on either:
+ 
  * Minimizing false cases (both false positives and false negatives)
  * Minimizing only false negatives (newly non-diagnosed cases)
-In our example, we want to miss as few diagnoses as possible compared to the original DSM-5 criteria, so we want to minimize the false negatives cases (newly_nondiagnosed). 
 
-```{r, echo=TRUE}
+In our example, we want to miss as few diagnoses as possible compared to the original DSM-5 criteria, so we want to minimize the false negative cases (newly_nondiagnosed). 
+
+```{r Optimal Hierarchical Symptom Combinations, echo=TRUE}
 # Find best combinations with hierarchical approach, minimizing false negatives
 best_combinations_hierarchical <- analyze_best_six_symptoms_four_required_clusters(
   simulated_ptsd_renamed,
@@ -162,42 +172,45 @@ best_combinations_hierarchical <- analyze_best_six_symptoms_four_required_cluste
 ```
 
 **Understanding the Output**
+
 The function returns three key elements. Let's take a look at it. 
 
  1. Selected Symptom Combinations: 
-```{r, echo=TRUE}
+```{r Best Symptoms hierarchical, echo=TRUE}
 best_combinations_hierarchical$best_symptoms
 ```
  
  2. Data comparing original DSM-5 diagnosis with diagnoses based on the three best combinations
-```{r, echo=TRUE}
+```{r Comparison of diagnosis hierarchical, echo=TRUE}
 # Shows true/false values for original vs. new criteria
-best_combinations_hierarchical$diagnosis_comparison
+head(best_combinations_hierarchical$diagnosis_comparison, 10)
 ```
  
  3. Summary table showing diagnostic accuracy metrics for each combination
-```{r, echo=TRUE}
-print(create_readable_summary(summarize_ptsd_changes(best_combinations_hierarchical$diagnosis_comparison)))
+```{r Summary table hierachical, echo=TRUE}
+best_combinations_hierarchical$summary
 ```
 
 The summary table includes:
 
-Total Diagnosed: Number and percentage of cases diagnosed
-Total Non-Diagnosed: Number and percentage of non-diagnosed cases
-True Positive/Negative: Agreement with original criteria
-False Positive/Negative: Disagreement with original criteria
-Sensitivity/Specificity: Diagnostic accuracy measures
-PPV/NPV: Predictive values
+ * Total Diagnosed: Number and percentage of cases diagnosed
+ * Total Non-Diagnosed: Number and percentage of non-diagnosed cases
+ * True Positive/Negative: Agreement with original criteria
+ * False Positive/Negative: Disagreement with original criteria
+ * Sensitivity/Specificity: Diagnostic accuracy measures
+ * PPV/NPV: Predictive values
 
 ## 4.2. Non-Hierarchical Analysis
 Now we do the same for the non-hierarchical approach. We want to find the three optimal six-symptom combinations, of which at least four symptoms must be present for the diagnosis, regardless of cluster membership. 
 
 Here too, the definition of the "optimal combination" can be determined using the score_by argument. Optimization again can be based on either:
+ 
  * Minimizing false cases (both false positives and false negatives)
  * Minimizing only false negatives (newly non-diagnosed cases)
+
 In our example, we want to miss as few diagnoses as possible compared to the original DSM-5 criteria, so we want to minimize the false negative cases (newly_nondiagnosed) in the non-hierarchical approach as well. 
 
-```{r, echo=TRUE}
+```{r Optimal Non-hierarchical Symptom Combinations, echo=TRUE}
 # Find best combinations with non-hierarchical approach, minimizing false negatives
 best_combinations_nonhierarchical <- analyze_best_six_symptoms_four_required(
   simulated_ptsd_renamed,
@@ -206,22 +219,23 @@ best_combinations_nonhierarchical <- analyze_best_six_symptoms_four_required(
 ```
 
 **Understanding the Output**
+
 Again, let's take a look at the output
  
  1. Selected Symptom Combinations:
-```{r, echo=TRUE}
+```{r Best Symptoms nonhierarchical, echo=TRUE}
 best_combinations_nonhierarchical$best_symptoms
 ```
  
  2. Data comparing original DSM-5 diagnosis with diagnoses based on the three best combinations
-```{r, echo=TRUE}
+```{r Comparison of diagnosis nonhierarchical, echo=TRUE}
 # Shows true/false values for original vs. new criteria
-best_combinations_nonhierarchical$diagnosis_comparison
+head(best_combinations_nonhierarchical$diagnosis_comparison, 10)
 ```
  
  3. Summary table showing diagnostic accuracy metrics for each combination
-```{r, echo=TRUE}
-print(create_readable_summary(summarize_ptsd_changes(best_combinations_nonhierarchical$diagnosis_comparison)))
+```{r Summary table nonhierachical, echo=TRUE}
+best_combinations_nonhierarchical$summary
 ```
 
 # 5. Conclusion

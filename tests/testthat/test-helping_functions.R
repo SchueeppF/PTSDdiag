@@ -1,21 +1,29 @@
 test_that("binarize_data works correctly", {
-  # Test case 1: Basic functionality with small dataset
-  test_data <- data.frame(
-    symptom_1 = c(0, 1, 2, 3, 4),
-    symptom_2 = c(1, 2, 3, 4, 0)
-  )
+  # Create test data with all 20 PCL-5 items
+  test_data <- data.frame(matrix(rep(0:4,4), nrow = 5, ncol = 20))
+  colnames(test_data) <- paste0("symptom_", 1:20)
 
-  test_data_binarized <- binarize_data(test_data)
+  # Test actual binarization
+  result <- binarize_data(test_data)
 
-  # Check binary conversion
-  expect_equal(test_data_binarized$symptom_1, c(0, 0, 1, 1, 1))
-  expect_equal(test_data_binarized$symptom_2, c(0, 1, 1, 1, 0))
+  # Test dimensions preserved
+  expect_equal(dim(result), dim(test_data))
 
-  # Test case 2: All possible values
-  all_values <- data.frame(x = 0:4)
-  binary_result <- binarize_data(all_values)
-  expect_equal(binary_result$x, c(0, 0, 1, 1, 1))
+  # Test column names preserved
+  expect_equal(colnames(result), colnames(test_data))
+
+  # Test values correctly binarized
+  expect_true(all(result[test_data < 2] == 0))
+  expect_true(all(result[test_data >= 2] == 1))
+
+  # Test only 0s and 1s in result
+  expect_true(all(result == 0 | result == 1))
+
+  # Test specific pattern for first column
+  expected_col1 <- c(0, 0, 1, 1, 1)  # Based on input 0,1,2,3,4
+  expect_equal(result$symptom_1, expected_col1)
 })
+
 
 test_that("create_ptsd_diagnosis_binarized works correctly", {
   # Test case 1: All criteria met
@@ -89,6 +97,28 @@ test_that("create_ptsd_diagnosis_binarized works correctly", {
 
   result <- create_ptsd_diagnosis_binarized(test_data)
   expect_equal(result$PTSD_orig, c(TRUE, FALSE, FALSE, TRUE))
+})
+
+test_that("create_ptsd_diagnosis_binarized and create_ptsd_diagnosis_nonbinarized show same diagnosis", {
+  # Test case 1: Regular pattern data
+  test_data <- data.frame(matrix(rep(0:4, 4), nrow = 5, ncol = 20))
+  colnames(test_data) <- paste0("symptom_", 1:20)
+
+  results_diagnosis_binarized <- create_ptsd_diagnosis_binarized(test_data)
+  results_diagnosis_nonbinarized <- create_ptsd_diagnosis_nonbinarized(test_data)
+
+  expect_equal(results_diagnosis_binarized$PTSD_orig,
+               results_diagnosis_nonbinarized$PTSD_Diagnosis)
+
+  # Test case 2: Edge case data with threshold values
+  edge_data <- data.frame(matrix(2, nrow = 5, ncol = 20))  # All values at threshold
+  colnames(edge_data) <- paste0("symptom_", 1:20)
+
+  results_edge_binarized <- create_ptsd_diagnosis_binarized(edge_data)
+  results_edge_nonbinarized <- create_ptsd_diagnosis_nonbinarized(edge_data)
+
+  expect_equal(results_edge_binarized$PTSD_orig,
+               results_edge_nonbinarized$PTSD_Diagnosis)
 })
 
 test_that("create_readable_summary works correctly", {
