@@ -21,7 +21,7 @@ This vignette demonstrates how to use the package to:
 
  * Import and prepare PCL-5 data
  * Calculate basic descriptive statistics and reliability metrics
- * Find optimal minimal symptom combinations for PTSD diagnosis
+ * Find optimal six-symptom combinations for PTSD diagnosis
  * Compare different diagnostic approaches
 
 # 2. Installation
@@ -51,7 +51,7 @@ library(psych)     # For reliability analysis
 
 # 3. Basic Usage
 ## 3.1. Loading Sample Data
-This package includes a simulated dataset that mirrors hypothetical PCL-5-assessments. It contains 10,000 simulated patient responses, each rating 20 PTSD symptoms according to DSM-5 criteria. 
+This package includes a simulated dataset that mirrors hypothetical PCL-5-assessments. It contains 5,000 simulated patient responses, each rating 20 PTSD symptoms according to DSM-5 criteria. 
 
 **Rating Scale**
 
@@ -142,7 +142,7 @@ Now we come to the actual analysis.
 Current PTSD diagnosis requires evaluating 20 symptoms across four clusters with complex rules. Our goal is to identify simplified diagnostic criteria that:
  
  * Reduce the number of symptoms to evaluate (from 20 to 6)
- * Preserve the polythetic nature of the diagnosis and allow representation from each cluster, so that at least for of the evaluated six symptoms must be present for diagnosis.
+ * Preserve the polythetic nature of the diagnosis and allow representation from each cluster, so that at least four of the evaluated six symptoms must be present for diagnosis.
  * Maintain diagnostic accuracy
 
 We would like to identify the three six-symptom combinations that best represent the group of PTSD patients compared to the original DSM-5 criteria. We determine these optimal six-symptom combinations under two different structural approaches (a hierarchical approach, requiring at least one symptom from each cluster, and a non-hierarchical approach, ignoring cluster membership). 

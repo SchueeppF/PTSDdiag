@@ -1,10 +1,10 @@
 #' Simulated PCL-5 (PTSD Checklist) Data
 #'
-#' A dataset containing simulated responses from 10,000 patients on the PCL-5
+#' A dataset containing simulated responses from 5,000 patients on the PCL-5
 #' (PTSD Checklist for DSM-5). Each patient rated 20 PTSD symptoms on a scale
 #' from 0 to 4.
 #'
-#' @format A data frame with 10,000 rows and 20 columns:
+#' @format A data frame with 5,000 rows and 20 columns:
 #' \describe{
 #'   \item{S1}{Intrusive memories (0-4 scale)}
 #'   \item{S2}{Recurring dreams (0-4 scale)}
