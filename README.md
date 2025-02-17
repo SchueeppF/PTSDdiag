@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# PTSDdiag
+# PTSDdiag <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -26,7 +26,7 @@ maintain diagnostic accuracy while reducing assessment burden.
 ## Installation
 
 This package is currently only hosted on GitHub. It can be installed
-using the usual wax
+using the usual way:
 
 ``` r
 install.packages("devtools")

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# PTSDdiag
+# PTSDdiag <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -33,7 +33,7 @@ PTSDdiag is a comprehensive R package for analyzing and simplifying PTSD diagnos
 
 ## Installation
 
-This package is currently only hosted on GitHub. It can be installed using the usual wax
+This package is currently only hosted on GitHub. It can be installed using the usual way:
 
 ``` {r, eval = FALSE}
 install.packages("devtools")
