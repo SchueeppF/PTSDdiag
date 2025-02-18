@@ -12,16 +12,19 @@ containing raw diagnostic metrics and counts}
 }
 \value{
 A formatted dataframe with the following columns:
-  * Scenario: Name of the diagnostic criterion
-  * Total Diagnosed: Count and percentage of diagnosed cases
-  * Total Non-Diagnosed: Count and percentage of non-diagnosed cases
-  * True Positive: Count of cases diagnosed under both criteria
-  * True Negative: Count of cases not diagnosed under either criterion
-  * Newly Diagnosed: Count of new positive diagnoses
-  * Newly Non-Diagnosed: Count of new negative diagnoses
-  * True Cases: Total correctly classified cases
-  * False Cases: Total misclassified cases
-  * Sensitivity, Specificity, PPV, NPV: Diagnostic accuracy metrics (4 decimals)
+
+\itemize{
+  \item  Scenario: Name of the diagnostic criterion
+  \item  Total Diagnosed: Count and percentage of diagnosed cases
+  \item  Total Non-Diagnosed: Count and percentage of non-diagnosed cases
+  \item  True Positive: Count of cases diagnosed under both criteria
+  \item  True Negative: Count of cases not diagnosed under either criterion
+  \item  Newly Diagnosed: Count of new positive diagnoses (false positive)
+  \item  Newly Non-Diagnosed: Count of new negative diagnoses (false negative)
+  \item  True Cases: Total correctly classified cases
+  \item  False Cases: Total misclassified cases
+  \item  Sensitivity, Specificity, PPV, NPV: Diagnostic accuracy metrics (4 decimals)
+}
 }
 \description{
 Formats the output of summarize_ptsd_changes() into a more readable table
@@ -29,9 +32,12 @@ with proper labels and formatting of percentages and metrics.
 }
 \details{
 Reformats the diagnostic metrics into a presentation-ready format:
-* Combines counts with percentages for diagnosed/non-diagnosed cases
-* Rounds diagnostic accuracy metrics to 4 decimal places
-* Provides clear column headers for all metrics
+
+\itemize{
+\item  Combines counts with percentages for diagnosed/non-diagnosed cases
+\item  Rounds diagnostic accuracy metrics to 4 decimal places
+\item  Provides clear column headers for all metrics
+}
 }
 \examples{
 # Using the output from summarize_ptsd_changes

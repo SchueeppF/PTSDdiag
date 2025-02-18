@@ -8,16 +8,22 @@ create_ptsd_diagnosis_nonbinarized(data)
 }
 \arguments{
 \item{data}{A dataframe that can be either:
-  * Output of rename_ptsd_columns(): 20 columns named symptom_1 to symptom_20
-  * Output of calculate_ptsd_total(): 21 columns including symptom_1 to
+
+\itemize{
+  \item Output of rename_ptsd_columns(): 20 columns named symptom_1 to symptom_20
+  \item Output of calculate_ptsd_total(): 21 columns including symptom_1 to
     symptom_20 plus a 'total' column
+}
 
   Each symptom should be scored on a 0-4 scale where:
-  * 0 = Not at all
-  * 1 = A little bit
-  * 2 = Moderately
-  * 3 = Quite a bit
-  * 4 = Extremely}
+
+\itemize{
+  \item 0 = Not at all
+  \item 1 = A little bit
+  \item 2 = Moderately
+  \item 3 = Quite a bit
+  \item 4 = Extremely
+}}
 }
 \value{
 A dataframe with all original columns (including 'total' if present)
@@ -30,12 +36,15 @@ item scores, using the original non-binarized values (0-4 scale).
 }
 \details{
 The function applies the DSM-5 diagnostic criteria for PTSD:
-* Criterion B (Intrusion): At least 1 symptom ≥ 2 from items 1-5
-* Criterion C (Avoidance): At least 1 symptom ≥ 2 from items 6-7
-* Criterion D (Negative alterations in cognitions and mood):
+
+\itemize{
+\item Criterion B (Intrusion): At least 1 symptom ≥ 2 from items 1-5
+\item Criterion C (Avoidance): At least 1 symptom ≥ 2 from items 6-7
+\item Criterion D (Negative alterations in cognitions and mood):
   At least 2 symptoms ≥ 2 from items 8-14
-* Criterion E (Alterations in arousal and reactivity):
+\item Criterion E (Alterations in arousal and reactivity):
   At least 2 symptoms ≥ 2 from items 15-20
+}
 
 A symptom is considered present when rated 2 (Moderately) or higher.
 }
@@ -50,13 +59,13 @@ colnames(sample_data1) <- paste0("symptom_", 1:20)
 diagnosed_data1 <- create_ptsd_diagnosis_nonbinarized(sample_data1)
 
 # Check diagnosis results
-table(diagnosed_data1$PTSD_Diagnosis)
+diagnosed_data1$PTSD_Diagnosis
 
 # Example with output from calculate_ptsd_total
 sample_data2 <- calculate_ptsd_total(sample_data1)
 diagnosed_data2 <- create_ptsd_diagnosis_nonbinarized(sample_data2)
 
 # Check diagnosis results
-table(diagnosed_data2$PTSD_Diagnosis)
+diagnosed_data2$PTSD_Diagnosis
 
 }

@@ -7,17 +7,23 @@
 #' @details
 #' The function implements the standard clinical threshold for PTSD symptom
 #' presence where:
-#' * Scores of 0-1 ("Not at all" and "A little bit") → 0 (symptom absent)
-#' * Scores of 2-4 ("Moderately" to "Extremely") → 1 (symptom present)
+#'
+#' \itemize{
+#' \item Scores of 0-1 ("Not at all" and "A little bit") → 0 (symptom absent)
+#' \item  Scores of 2-4 ("Moderately" to "Extremely") → 1 (symptom present)
+#'}
 #'
 #' @param data A dataframe containing exactly 20 columns with PCL-5 item scores
 #'  (output of rename_ptsd_columns). Each symptom should be scored
 #'   on a 0-4 scale where:
-#'   * 0 = Not at all
-#'   * 1 = A little bit
-#'   * 2 = Moderately
-#'   * 3 = Quite a bit
-#'   * 4 = Extremely
+#'
+#' \itemize{
+#'   \item  0 = Not at all
+#'   \item  1 = A little bit
+#'   \item  2 = Moderately
+#'   \item  3 = Quite a bit
+#'   \item  4 = Extremely
+#'}
 #'
 #'  Note: This function should only be used with raw symptom scores before
 #'  calculating the total score, as it will convert all values in the dataframe
@@ -25,8 +31,11 @@
 #'
 #' @returns A dataframe with the same structure as input but with all symptom
 #'   scores converted to binary values:
-#'   * 0 = Symptom absent (original scores 0-1)
-#'   * 1 = Symptom present (original scores 2-4)
+#'
+#' \itemize{
+#'   \item  0 = Symptom absent (original scores 0-1)
+#'   \item  1 = Symptom present (original scores 2-4)
+#'}
 #'
 #' @export
 #'
@@ -41,7 +50,7 @@
 #'
 #' # Binarize scores
 #' binary_data <- binarize_data(sample_data)
-#' table(binary_data) # Should only show 0s and 1s
+#' binary_data # Should only show 0s and 1s
 #'
 binarize_data <- function(data) {
   # Validate number of columns
@@ -90,21 +99,27 @@ binarize_data <- function(data) {
 #' @details
 #' The function applies the DSM-5 diagnostic criteria for PTSD using binary
 #' indicators of symptom presence:
-#' * Criterion B (Intrusion): At least 1 present symptom from items 1-5
-#' * Criterion C (Avoidance): At least 1 present symptom from items 6-7
-#' * Criterion D (Negative alterations in cognitions and mood):
-#'   At least 2 present symptoms from items 8-14
-#' * Criterion E (Alterations in arousal and reactivity):
-#'   At least 2 present symptoms from items 15-20
+#'
+#' \itemize{
+#' \item  Criterion B (Intrusion): At least 1 present symptom from items 1-5
+#' \item  Criterion C (Avoidance): At least 1 present symptom from items 6-7
+#' \item  Criterion D (Negative alterations in cognitions and mood):
+#'        At least 2 present symptoms from items 8-14
+#' \item  Criterion E (Alterations in arousal and reactivity):
+#'        At least 2 present symptoms from items 15-20
+#'}
 #'
 #' @param data A dataframe containing exactly 20 columns of PCL-5 item scores
 #'   (output of rename_ptsd_columns) named symptom_1 to symptom_20. Each symptom
 #'   should be scored on a 0-4 scale where:
-#'   * 0 = Not at all
-#'   * 1 = A little bit
-#'   * 2 = Moderately
-#'   * 3 = Quite a bit
-#'   * 4 = Extremely
+#'
+#' \itemize{
+#'   \item  0 = Not at all
+#'   \item  1 = A little bit
+#'   \item  2 = Moderately
+#'   \item  3 = Quite a bit
+#'   \item  4 = Extremely
+#'}
 #'
 #' Note: This function should only be used with raw symptom scores (output of
 #' rename_ptsd_columns) and not with data containing a total score column, as
@@ -127,7 +142,7 @@ binarize_data <- function(data) {
 #'
 #' # Get diagnosis using binarized approach
 #' diagnosis_results <- create_ptsd_diagnosis_binarized(sample_data)
-#' table(diagnosis_results$PTSD_orig)
+#' diagnosis_results$PTSD_orig
 #'
 create_ptsd_diagnosis_binarized <- function(data) {
   # Validate number of columns
@@ -185,40 +200,56 @@ create_ptsd_diagnosis_binarized <- function(data) {
 #' Compares different PTSD diagnostic criteria by calculating diagnostic accuracy
 #' metrics and changes in diagnosis status relative to a baseline criterion.
 #'
-#' #' @details
+#' @details
 #' The function calculates multiple diagnostic metrics comparing each diagnostic
 #' criterion to a baseline criterion (PTSD_orig):
 #'
 #' Basic counts:
-#' * Number and percentage of diagnosed/non-diagnosed cases per criterion
-#' * Number of newly diagnosed and newly non-diagnosed cases
-#' * True positive and true negative cases
+#'
+#' \itemize{
+#' \item  Number and percentage of diagnosed/non-diagnosed cases per criterion
+#' \item  Number of newly diagnosed (false positive) and newly non-diagnosed
+#'   (false negative) cases
+#' \item  True positive and true negative cases
+#'}
 #'
 #' Diagnostic accuracy metrics:
-#' * Sensitivity: Proportion of true PTSD cases correctly identified
-#' * Specificity: Proportion of non-PTSD cases correctly identified
-#' * PPV (Positive Predictive Value): Probability that a positive diagnosis is correct
-#' * NPV (Negative Predictive Value): Probability that a negative diagnosis is correct
+#'
+#' \itemize{
+#' \item  Sensitivity: Proportion of true PTSD cases correctly identified
+#' \item  Specificity: Proportion of non-PTSD cases correctly identified
+#' \item  PPV (Positive Predictive Value): Probability that a positive diagnosis is correct
+#' \item  NPV (Negative Predictive Value): Probability that a negative diagnosis is correct
+#'}
 #'
 #' @param data A dataframe where:
-#'   * Each column represents a different diagnostic criterion
-#'   * Must include a column named "PTSD_orig" as the baseline criterion
-#'   * Values are logical (TRUE/FALSE) indicating whether PTSD criteria are met
-#'   * Each row represents one case/participant
+#'
+#' \itemize{
+#'   \item  Each column represents a different diagnostic criterion
+#'   \item  Must include a column named "PTSD_orig" as the baseline criterion
+#'   \item  Values are logical (TRUE/FALSE) indicating whether PTSD criteria are met
+#'   \item  Each row represents one case/participant
+#' }
 #'
 #' @returns A dataframe containing the following columns for each diagnostic criterion:
-#'   * column: Name of the diagnostic criterion
-#'   * diagnosed: Number of cases diagnosed as PTSD
-#'   * non_diagnosed: Number of cases not diagnosed as PTSD
-#'   * diagnosed_percent: Percentage of cases diagnosed
-#'   * non_diagnosed_percent: Percentage of cases not diagnosed
-#'   * newly_diagnosed: Cases diagnosed under new but not baseline criterion
-#'   * newly_nondiagnosed: Cases diagnosed under baseline but not new criterion
-#'   * true_positive: Cases diagnosed under both criteria
-#'   * true_negative: Cases not diagnosed under either criterion
-#'   * true_cases: Sum of true positives and true negatives
-#'   * false_cases: Sum of newly diagnosed and newly non-diagnosed
-#'   * sensitivity, specificity, ppv, npv: Standard diagnostic accuracy metrics
+#'
+#' \itemize{
+#'   \item  column: Name of the diagnostic criterion
+#'   \item  diagnosed: Number of cases diagnosed as PTSD
+#'   \item  non_diagnosed: Number of cases not diagnosed as PTSD
+#'   \item  diagnosed_percent: Percentage of cases diagnosed
+#'   \item  non_diagnosed_percent: Percentage of cases not diagnosed
+#'   \item  newly_diagnosed: Cases diagnosed under new but not baseline criterion
+#'     (false positive)
+#'   \item  newly_nondiagnosed: Cases diagnosed under baseline but not new criterion
+#'     (false negative)
+#'   \item  true_positive: Cases diagnosed under both criteria
+#'   \item  true_negative: Cases not diagnosed under either criterion
+#'   \item  true_cases: Sum of true positives and true negatives
+#'   \item  false_cases: Sum of newly diagnosed (false positive) and newly non-diagnosed
+#'     (false negative)
+#'   \item  sensitivity, specificity, ppv, npv: Standard diagnostic accuracy metrics
+#'}
 #'
 #' @export
 #'
@@ -234,6 +265,7 @@ create_ptsd_diagnosis_binarized <- function(data) {
 #'
 #' # Calculate diagnostic metrics
 #' diagnostic_metrics <- summarize_ptsd_changes(sample_data)
+#' diagnostic_metrics
 #'
 summarize_ptsd_changes <- function(data) {
   # Check if data is a dataframe
@@ -313,24 +345,30 @@ summarize_ptsd_changes <- function(data) {
 #'
 #' @details
 #' Reformats the diagnostic metrics into a presentation-ready format:
-#' * Combines counts with percentages for diagnosed/non-diagnosed cases
-#' * Rounds diagnostic accuracy metrics to 4 decimal places
-#' * Provides clear column headers for all metrics
+#'
+#' \itemize{
+#' \item  Combines counts with percentages for diagnosed/non-diagnosed cases
+#' \item  Rounds diagnostic accuracy metrics to 4 decimal places
+#' \item  Provides clear column headers for all metrics
+#'}
 #'
 #' @param summary_stats A dataframe output from summarize_ptsd_changes()
 #'   containing raw diagnostic metrics and counts
 #'
 #' @returns A formatted dataframe with the following columns:
-#'   * Scenario: Name of the diagnostic criterion
-#'   * Total Diagnosed: Count and percentage of diagnosed cases
-#'   * Total Non-Diagnosed: Count and percentage of non-diagnosed cases
-#'   * True Positive: Count of cases diagnosed under both criteria
-#'   * True Negative: Count of cases not diagnosed under either criterion
-#'   * Newly Diagnosed: Count of new positive diagnoses
-#'   * Newly Non-Diagnosed: Count of new negative diagnoses
-#'   * True Cases: Total correctly classified cases
-#'   * False Cases: Total misclassified cases
-#'   * Sensitivity, Specificity, PPV, NPV: Diagnostic accuracy metrics (4 decimals)
+#'
+#' \itemize{
+#'   \item  Scenario: Name of the diagnostic criterion
+#'   \item  Total Diagnosed: Count and percentage of diagnosed cases
+#'   \item  Total Non-Diagnosed: Count and percentage of non-diagnosed cases
+#'   \item  True Positive: Count of cases diagnosed under both criteria
+#'   \item  True Negative: Count of cases not diagnosed under either criterion
+#'   \item  Newly Diagnosed: Count of new positive diagnoses (false positive)
+#'   \item  Newly Non-Diagnosed: Count of new negative diagnoses (false negative)
+#'   \item  True Cases: Total correctly classified cases
+#'   \item  False Cases: Total misclassified cases
+#'   \item  Sensitivity, Specificity, PPV, NPV: Diagnostic accuracy metrics (4 decimals)
+#'}
 #'
 #' @export
 #'

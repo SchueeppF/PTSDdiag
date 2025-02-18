@@ -10,11 +10,14 @@ binarize_data(data)
 \item{data}{A dataframe containing exactly 20 columns with PCL-5 item scores
  (output of rename_ptsd_columns). Each symptom should be scored
   on a 0-4 scale where:
-  * 0 = Not at all
-  * 1 = A little bit
-  * 2 = Moderately
-  * 3 = Quite a bit
-  * 4 = Extremely
+
+\itemize{
+  \item  0 = Not at all
+  \item  1 = A little bit
+  \item  2 = Moderately
+  \item  3 = Quite a bit
+  \item  4 = Extremely
+}
 
  Note: This function should only be used with raw symptom scores before
  calculating the total score, as it will convert all values in the dataframe
@@ -23,8 +26,11 @@ binarize_data(data)
 \value{
 A dataframe with the same structure as input but with all symptom
   scores converted to binary values:
-  * 0 = Symptom absent (original scores 0-1)
-  * 1 = Symptom present (original scores 2-4)
+
+\itemize{
+  \item  0 = Symptom absent (original scores 0-1)
+  \item  1 = Symptom present (original scores 2-4)
+}
 }
 \description{
 Converts PCL-5 symptom scores from their original 0-4 scale to binary values
@@ -33,8 +39,11 @@ Converts PCL-5 symptom scores from their original 0-4 scale to binary values
 \details{
 The function implements the standard clinical threshold for PTSD symptom
 presence where:
-* Scores of 0-1 ("Not at all" and "A little bit") → 0 (symptom absent)
-* Scores of 2-4 ("Moderately" to "Extremely") → 1 (symptom present)
+
+\itemize{
+\item Scores of 0-1 ("Not at all" and "A little bit") → 0 (symptom absent)
+\item  Scores of 2-4 ("Moderately" to "Extremely") → 1 (symptom present)
+}
 }
 \examples{
 # Create sample data
@@ -47,6 +56,6 @@ colnames(sample_data) <- paste0("symptom_", 1:20)
 
 # Binarize scores
 binary_data <- binarize_data(sample_data)
-table(binary_data) # Should only show 0s and 1s
+binary_data # Should only show 0s and 1s
 
 }

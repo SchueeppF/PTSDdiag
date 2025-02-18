@@ -10,11 +10,14 @@ create_ptsd_diagnosis_binarized(data)
 \item{data}{A dataframe containing exactly 20 columns of PCL-5 item scores
   (output of rename_ptsd_columns) named symptom_1 to symptom_20. Each symptom
   should be scored on a 0-4 scale where:
-  * 0 = Not at all
-  * 1 = A little bit
-  * 2 = Moderately
-  * 3 = Quite a bit
-  * 4 = Extremely
+
+\itemize{
+  \item  0 = Not at all
+  \item  1 = A little bit
+  \item  2 = Moderately
+  \item  3 = Quite a bit
+  \item  4 = Extremely
+}
 
 Note: This function should only be used with raw symptom scores (output of
 rename_ptsd_columns) and not with data containing a total score column, as
@@ -33,12 +36,15 @@ determine_ptsd_diagnosis() that works with pre-binarized data.
 \details{
 The function applies the DSM-5 diagnostic criteria for PTSD using binary
 indicators of symptom presence:
-* Criterion B (Intrusion): At least 1 present symptom from items 1-5
-* Criterion C (Avoidance): At least 1 present symptom from items 6-7
-* Criterion D (Negative alterations in cognitions and mood):
-  At least 2 present symptoms from items 8-14
-* Criterion E (Alterations in arousal and reactivity):
-  At least 2 present symptoms from items 15-20
+
+\itemize{
+\item  Criterion B (Intrusion): At least 1 present symptom from items 1-5
+\item  Criterion C (Avoidance): At least 1 present symptom from items 6-7
+\item  Criterion D (Negative alterations in cognitions and mood):
+       At least 2 present symptoms from items 8-14
+\item  Criterion E (Alterations in arousal and reactivity):
+       At least 2 present symptoms from items 15-20
+}
 }
 \examples{
 # Create sample data
@@ -51,6 +57,6 @@ colnames(sample_data) <- paste0("symptom_", 1:20)
 
 # Get diagnosis using binarized approach
 diagnosis_results <- create_ptsd_diagnosis_binarized(sample_data)
-table(diagnosis_results$PTSD_orig)
+diagnosis_results$PTSD_orig
 
 }

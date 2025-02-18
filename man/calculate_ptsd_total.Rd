@@ -8,25 +8,27 @@ calculate_ptsd_total(data)
 }
 \arguments{
 \item{data}{A dataframe containing standardized PCL-5 item scores (output of
-rename_ptsd_columns). Each symptom should be scored on a 0-4 scale where:
-* 0 = Not at all
-* 1 = A little bit
-* 2 = Moderately
-* 3 = Quite a bit
-* 4 = Extremely}
+  rename_ptsd_columns). Each symptom should be scored on a 0-4 scale where:
+
+\itemize{
+  \item 0 = Not at all
+  \item 1 = A little bit
+  \item 2 = Moderately
+  \item 3 = Quite a bit
+  \item 4 = Extremely
+}}
 }
 \value{
 A dataframe with all original columns plus an additional column "total"
   containing the sum of all 20 symptom scores (range: 0-80)
 }
 \description{
-Calculates the totals score from PTSD symptoms
-}
-\details{
-#' @description
 Calculates the total PCL-5 (PTSD Checklist for DSM-5) score by summing all
 20 symptom scores. The total score ranges from 0 to 80, with higher scores
 indicating greater symptom severity.
+}
+\details{
+Calculates the total score from PCL-5 items
 }
 \examples{
 # Create sample data

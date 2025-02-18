@@ -5,13 +5,12 @@ Version: 0.1.0
 Authors@R: c(
     person(
       "Laura", "Weidmann",
-      email = "jane@example.com",
+      email = "laura.weidmann@uzh.ch",
       role = c("aut", "cre")
     ),
     person(
       "Tobias R.", "Spiller",
       role = c("aut"),
-      comment = c(ORCID = "your-orcid-if-available")
     )
   )
 Description: A comprehensive toolkit for analyzing and optimizing PTSD 

@@ -10,18 +10,24 @@
 #' the 20 items of the PCL-5. The columns are renamed sequentially from symptom_1
 #' to symptom_20, maintaining their original order. The PCL-5 items correspond to
 #' different symptom clusters:
-#' * symptom_1 to symptom_5: Intrusion symptoms (Criterion B)
-#' * symptom_6 to symptom_7: Avoidance symptoms (Criterion C)
-#' * symptom_8 to symptom_14: Negative alterations in cognitions and mood (Criterion D)
-#' * symptom_15 to symptom_20: Alterations in arousal and reactivity (Criterion E)
+#'
+#' \itemize{
+#' \item symptom_1 to symptom_5: Intrusion symptoms (Criterion B)
+#' \item symptom_6 to symptom_7: Avoidance symptoms (Criterion C)
+#' \item symptom_8 to symptom_14: Negative alterations in cognitions and mood (Criterion D)
+#' \item symptom_15 to symptom_20: Alterations in arousal and reactivity (Criterion E)
+#'}
 #'
 #' @param data A dataframe containing exactly 20 columns, where each column
 #'   represents a PCL-5 item score. The scores should be on a 0-4 scale where:
-#'   * 0 = Not at all
-#'   * 1 = A little bit
-#'   * 2 = Moderately
-#'   * 3 = Quite a bit
-#'   * 4 = Extremely
+#'
+#' \itemize{
+#'   \item 0 = Not at all
+#'   \item 1 = A little bit
+#'   \item 2 = Moderately
+#'   \item 3 = Quite a bit
+#'   \item 4 = Extremely
+#'}
 #'
 #' @returns A dataframe with the same data but renamed columns following the pattern
 #'   'symptom_1' through 'symptom_20'

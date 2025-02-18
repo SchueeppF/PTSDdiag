@@ -8,26 +8,35 @@ analyze_best_six_symptoms_four_required(data, score_by = "false_cases")
 }
 \arguments{
 \item{data}{A dataframe containing exactly 20 columns with PCL-5 item scores
-(output of rename_ptsd_columns). Each symptom should be scored on a 0-4
-scale where:
-* 0 = Not at all
-* 1 = A little bit
-* 2 = Moderately
-* 3 = Quite a bit
-* 4 = Extremely}
+  (output of rename_ptsd_columns). Each symptom should be scored on a 0-4
+  scale where:
+
+\itemize{
+  \item 0 = Not at all
+  \item 1 = A little bit
+  \item 2 = Moderately
+  \item 3 = Quite a bit
+  \item 4 = Extremely
+}}
 
 \item{score_by}{Character string specifying optimization criterion:
-* "false_cases": Minimize total misclassifications
-* "newly_nondiagnosed": Minimize false negatives only}
+
+\itemize{
+  \item "false_cases": Minimize total misclassifications
+  \item "newly_nondiagnosed": Minimize false negatives only
+}}
 }
 \value{
 A list containing:
-  * best_symptoms: List of three vectors, each containing six symptom numbers
+
+\itemize{
+  \item best_symptoms: List of three vectors, each containing six symptom numbers
     representing the best combinations found
-  * diagnosis_comparison: Dataframe comparing original DSM-5 diagnosis with
+  \item diagnosis_comparison: Dataframe comparing original DSM-5 diagnosis with
     diagnoses based on the three best combinations
-  * summary: Interactive datatable (DT) showing diagnostic accuracy metrics
+  \item summary: Interactive datatable (DT) showing diagnostic accuracy metrics
     for each combination
+}
 }
 \description{
 Identifies the three best six-symptom combinations for PTSD diagnosis
@@ -37,19 +46,28 @@ DSM-5 criteria.
 }
 \details{
 The function:
-1. Tests all possible combinations of 6 symptoms from the 20 PCL-5 items
-2. Requires 4 symptoms to be present (≥2 on original 0-4 scale) for diagnosis
-3. Identifies the three combinations that best match the original DSM-5 diagnosis
+
+\enumerate{
+ \item Tests all possible combinations of 6 symptoms from the 20 PCL-5 items
+ \item Requires 4 symptoms to be present (≥2 on original 0-4 scale) for diagnosis
+ \item Identifies the three combinations that best match the original DSM-5 diagnosis
+}
 
 Optimization can be based on either:
-* Minimizing false cases (both false positives and false negatives)
-* Minimizing only false negatives (newly non-diagnosed cases)
+
+\itemize{
+\item Minimizing false cases (both false positives and false negatives)
+\item Minimizing only false negatives (newly non-diagnosed cases)
+}
 
 The symptom clusters in PCL-5 are:
-* Items 1-5: Intrusion symptoms (Criterion B)
-* Items 6-7: Avoidance symptoms (Criterion C)
-* Items 8-14: Negative alterations in cognitions and mood (Criterion D)
-* Items 15-20: Alterations in arousal and reactivity (Criterion E)
+
+\itemize{
+\item Items 1-5: Intrusion symptoms (Criterion B)
+\item Items 6-7: Avoidance symptoms (Criterion C)
+\item Items 8-14: Negative alterations in cognitions and mood (Criterion D)
+\item Items 15-20: Alterations in arousal and reactivity (Criterion E)
+}
 }
 \examples{
 # Create example data
@@ -63,9 +81,22 @@ results <- analyze_best_six_symptoms_four_required(ptsd_data, score_by = "false_
 results_min_fn <- analyze_best_six_symptoms_four_required(ptsd_data,
 score_by = "newly_nondiagnosed")
 
-# Access results
-results$best_symptoms # Get symptom numbers
-results$summary # View interactive summary table
-results$diagnosis_comparison # View raw comparison data
+## Access results
+# Get symptom numbers
+results$best_symptoms
+
+# View raw comparison data
+results$diagnosis_comparison
+
+# View summary statistics (basic format)
+summary_data <- results$summary$x$data  # Extract underlying data
+print(summary_data)  # Display in basic format
+
+\dontrun{
+# For interactive table display
+if (requireNamespace("DT", quietly = TRUE)) {
+  results$summary  # Display as interactive table
+}
+}
 
 }

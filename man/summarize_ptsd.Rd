@@ -8,15 +8,21 @@ summarize_ptsd(data)
 }
 \arguments{
 \item{data}{A dataframe containing at minimum:
-* A 'total' column with PCL-5 total scores (from calculate_ptsd_total)
-* A 'PTSD_Diagnosis' column with TRUE/FALSE values (from
-  determine_ptsd_diagnosis)}
+
+\itemize{
+  \item A 'total' column with PCL-5 total scores (from calculate_ptsd_total)
+  \item A 'PTSD_Diagnosis' column with TRUE/FALSE values (from
+    determine_ptsd_diagnosis)
+}}
 }
 \value{
 A dataframe with one row containing:
-  * mean_total: Mean PCL-5 total score
-  * sd_total: Standard deviation of PCL-5 total scores
-  * n_diagnosed: Number of positive PTSD diagnoses
+
+\itemize{
+  \item mean_total: Mean PCL-5 total score
+  \item sd_total: Standard deviation of PCL-5 total scores
+  \item n_diagnosed: Number of positive PTSD diagnoses
+}
 }
 \description{
 Creates a summary of PCL-5 total scores and PTSD diagnoses, including mean
@@ -24,9 +30,12 @@ total score, standard deviation, and number of positive diagnoses.
 }
 \details{
 This function calculates key summary statistics for PCL-5 data:
-* Mean total score (severity indicator)
-* Standard deviation of total scores (variability in severity)
-* Count of positive PTSD diagnoses (prevalence in the sample)
+
+\itemize{
+\item Mean total score (severity indicator)
+\item Standard deviation of total scores (variability in severity)
+\item Count of positive PTSD diagnoses (prevalence in the sample)
+}
 }
 \examples{
 # Create sample data

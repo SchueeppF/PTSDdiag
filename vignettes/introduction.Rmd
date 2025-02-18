@@ -34,12 +34,12 @@ if (!require("devtools")) install.packages("devtools")
 
 # Install PTSDdiag
 library("devtools")
-# devtools::install_github("")
+devtools::install_github("WeidmannL/PTSDdiag")
 ```
 
 ## 2.2. Loading Required Packages
 
-Once the `PTSDdiag` is installed it can be loaded the usual way.
+Once the `PTSDdiag` is installed, it can be loaded the usual way.
 ```{r Loading PTSDdiag, echo=TRUE, warning=FALSE}
 library("PTSDdiag")
 ```
@@ -93,7 +93,7 @@ and take a look at the first few rows of the sample data:
 head(simulated_ptsd)
 ```
 
-## 3.2. Data Prepration
+## 3.2. Data Preparation
 The first step is to standardize column names for consistent analysis. 
 Before standardization, columns might have various names:
 ```{r Column names of input data, echo=TRUE}
@@ -162,7 +162,6 @@ The definition of the “optimal combination" can be determined with the score_b
  * Minimizing only false negatives (newly non-diagnosed cases)
 
 In our example, we want to miss as few diagnoses as possible compared to the original DSM-5 criteria, so we want to minimize the false negative cases (newly_nondiagnosed). 
-
 ```{r Optimal Hierarchical Symptom Combinations, echo=TRUE}
 # Find best combinations with hierarchical approach, minimizing false negatives
 best_combinations_hierarchical <- analyze_best_six_symptoms_four_required_clusters(
@@ -209,7 +208,6 @@ Here too, the definition of the "optimal combination" can be determined using th
  * Minimizing only false negatives (newly non-diagnosed cases)
 
 In our example, we want to miss as few diagnoses as possible compared to the original DSM-5 criteria, so we want to minimize the false negative cases (newly_nondiagnosed) in the non-hierarchical approach as well. 
-
 ```{r Optimal Non-hierarchical Symptom Combinations, echo=TRUE}
 # Find best combinations with non-hierarchical approach, minimizing false negatives
 best_combinations_nonhierarchical <- analyze_best_six_symptoms_four_required(
@@ -239,4 +237,4 @@ best_combinations_nonhierarchical$summary
 ```
 
 # 5. Conclusion
-With `PTSDdiag` package PCL-5 data can be processed and analyzed efficiently. It allows to identify reduced optimal symptom combinations for PTSD diagnosis and to compare different diagnostic approaches by generating detailed diagnostic accuracy metrics.
+With the `PTSDdiag` package, PCL-5 data can be processed and analyzed efficiently. It allows to identify reduced optimal symptom combinations for PTSD diagnosis and to compare different diagnostic approaches by generating detailed diagnostic accuracy metrics.
