@@ -40,7 +40,7 @@ data, calculate some basic descriptive statistics and reliability
 metrics, find the optimal minimal symptom combinations for PTSD
 diagnosis and compare different diagnostic approaches.
 
-- [An Introduction to PTSDdiag](https://osf.io/m7vhe)
+- [An Introduction to PTSDdiag](https://osf.io/73bgx)
 
 ## Bugs, Contributions
 

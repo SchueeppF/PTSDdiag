@@ -133,7 +133,7 @@ The summary statistics provide:
 ## 3.4. Reliability Analysis
 Cronbach's alpha is calculated to assess the internal consistency of the PCL-5:
 ```{r Reliability Analysis, echo=TRUE}
-cronbach <- psych::alpha(simulated_ptsd_total)
+cronbach <- psych::alpha(subset(simulated_ptsd_total_diagnosed, select = (-total)))
 print(cronbach$total)
 ```
 
