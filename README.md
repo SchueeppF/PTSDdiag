@@ -1,15 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<h1>
-PTSDdiag
 
-<div style="background: white; display: inline-block; float: right;">
+<img src="man/figures/logo.png" align="right" height="250" style="background: white; padding: 10px;" alt="PTSDdiag logo" />
 
-<img src="man/figures/logo.png" height="250" style="margin: 0 0 0 10px; padding: 10px;" alt="PTSDdiag logo" />
+# PTSDdiag
 
-</div>
-
-</h1>
 <!-- badges: start -->
 <!-- badges: end -->
 

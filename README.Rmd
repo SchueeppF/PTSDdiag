@@ -13,7 +13,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-<h1>PTSDdiag <div style="background: white; display: inline-block; float: right;"><img src="man/figures/logo.png" height="250" style="margin: 0 0 0 10px; padding: 10px;" alt="PTSDdiag logo" /></div></h1>
+<img src="man/figures/logo.png" align="right" height="250" style="background: white; padding: 10px;" alt="PTSDdiag logo" />
+
+# PTSDdiag
 
 <!-- badges: start -->
 <!-- badges: end -->
