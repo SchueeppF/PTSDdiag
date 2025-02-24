@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="man/figures/logo.png" align="left" height="250" style="background: white; padding: 10px;" alt="PTSDdiag logo" />
+<img src="man/figures/logo.png" align="right" height="250" style="background: white; padding: 10px;" alt="PTSDdiag logo" />
 
 # PTSDdiag
 
