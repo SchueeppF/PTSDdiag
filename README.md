@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# PTSDdiag
+<h1>
+PTSDdiag
 
 <div style="background: white; display: inline-block; float: right;">
 
@@ -9,6 +9,7 @@
 
 </div>
 
+</h1>
 <!-- badges: start -->
 <!-- badges: end -->
 
