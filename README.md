@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# PTSDdiag <img src="man/figures/logo.png" align="right" height="250" style="background-color: white; margin: 0 0 0 10px; padding: 10px;" alt="PTSDdiag logo" />
+# PTSDdiag <img src="man/figures/logo.png" align="right" height="250" style="background-color: white; margin: 0 0 0 10px; padding: 10px; box-shadow: 0 0 0 10px white;" alt="PTSDdiag logo" />
 
 <!-- badges: start -->
 <!-- badges: end -->
