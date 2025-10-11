@@ -236,5 +236,157 @@ head(best_combinations_nonhierarchical$diagnosis_comparison, 10)
 best_combinations_nonhierarchical$summary
 ```
 
-# 5. Conclusion
+# 5. Model Validation
+After identifying optimal symptom combinations, it's crucial to validate their performance on independent data. The `PTSDdiag` package provides two validation approaches:
+
+## 5.1. Holdout Validation
+Holdout validation splits the data into training and test sets, allowing us to evaluate how well the identified symptom combinations generalize to new data.
+
+```{r Holdout Validation, echo=TRUE}
+# Perform holdout validation with 70/30 split
+validation_results <- holdout_validation(
+  simulated_ptsd_renamed,
+  train_ratio = 0.7,
+  score_by = "newly_nondiagnosed",
+  seed = 123
+)
+```
+
+**Examining Results for Non-Hierarchical Model:**
+
+```{r Holdout Results Non-Hierarchical, echo=TRUE}
+# Best combinations identified on training data
+validation_results$without_clusters$best_combinations
+
+# Performance summary on test data
+validation_results$without_clusters$summary
+```
+
+**Examining Results for Hierarchical Model:**
+
+```{r Holdout Results Hierarchical, echo=TRUE}
+# Best combinations identified on training data (with cluster representation)
+validation_results$with_clusters$best_combinations
+
+# Performance summary on test data
+validation_results$with_clusters$summary
+```
+
+The validation results show how the symptom combinations perform on data they weren't trained on, providing a more realistic estimate of their diagnostic accuracy.
+
+## 5.2. Cross-Validation
+For a more robust assessment, k-fold cross-validation tests the stability of symptom combinations across multiple data splits.
+
+```{r Cross Validation, echo=TRUE}
+# Perform 5-fold cross-validation
+cv_results <- cross_validation(
+  simulated_ptsd_renamed,
+  k = 5,
+  score_by = "newly_nondiagnosed",
+  seed = 123
+)
+```
+
+**Results by Fold:**
+
+The function provides detailed results for each fold:
+
+```{r CV Results by Fold, echo=TRUE}
+# Summary statistics for each fold (non-hierarchical model)
+cv_results$without_clusters$summary_by_fold
+
+# Summary statistics for each fold (hierarchical model)
+cv_results$with_clusters$summary_by_fold
+```
+
+**Stable Combinations Across Folds:**
+
+If certain symptom combinations appear in multiple folds, the function calculates their average performance:
+
+```{r CV Stable Combinations, echo=TRUE}
+# Check for combinations that appeared in multiple folds (non-hierarchical)
+if (!is.null(cv_results$without_clusters$combinations_summary)) {
+  print("Stable combinations in non-hierarchical model:")
+  cv_results$without_clusters$combinations_summary
+} else {
+  print("No combinations appeared in multiple folds for the non-hierarchical model")
+}
+
+# Check for combinations that appeared in multiple folds (hierarchical)
+if (!is.null(cv_results$with_clusters$combinations_summary)) {
+  print("Stable combinations in hierarchical model:")
+  cv_results$with_clusters$combinations_summary
+} else {
+  print("No combinations appeared in multiple folds for the hierarchical model")
+}
+```
+
+**Interpreting Cross-Validation Results:**
+
+Cross-validation helps identify:
+
+1. **Consistency**: Whether the same symptom combinations are selected across different data subsets
+2. **Stability**: How diagnostic accuracy varies across folds
+3. **Generalization**: Average performance metrics provide robust estimates of real-world performance
+
+Key metrics to examine:
+- **Splits_Appeared**: How many folds selected this combination (higher = more stable)
+- **Sensitivity**: Proportion of true PTSD cases correctly identified
+- **Specificity**: Proportion of non-PTSD cases correctly identified
+- **PPV/NPV**: Predictive values indicating diagnostic confidence
+
+## 5.3. Comparing Validation Approaches
+Both validation methods serve complementary purposes:
+
+**Holdout Validation:**
+- Simpler and faster
+- Single train-test split
+- Good for initial assessment
+- May be less stable with small datasets
+
+**Cross-Validation:**
+- More computationally intensive
+- Multiple train-test splits
+- Better estimate of generalization
+- Identifies stable symptom patterns
+
+```{r Compare Validation Methods, echo=TRUE}
+# Example: Compare sensitivity from both methods
+# Note: Results will vary based on random splits
+
+# Holdout validation sensitivity (first combination, non-hierarchical)
+holdout_summary <- validation_results$without_clusters$summary$x$data
+if (nrow(holdout_summary) > 1) {
+  holdout_sensitivity <- holdout_summary[2, "Sensitivity"]
+  print(paste("Holdout sensitivity for first combination:", 
+              round(holdout_sensitivity, 3)))
+}
+
+# Cross-validation average sensitivity (if stable combinations exist)
+if (!is.null(cv_results$without_clusters$combinations_summary)) {
+  cv_summary <- cv_results$without_clusters$combinations_summary$x$data
+  if (nrow(cv_summary) > 0) {
+    cv_sensitivity <- cv_summary[1, "Sensitivity"]
+    print(paste("Cross-validation average sensitivity:", 
+                round(cv_sensitivity, 3)))
+  }
+}
+```
+
+## 5.4. Validation Best Practices
+When validating PTSD diagnostic models:
+
+1. **Set a seed** for reproducibility: `seed = 123`
+2. **Choose appropriate validation**:
+   - Use holdout for quick assessment
+   - Use cross-validation for publication-quality results
+3. **Consider your optimization goal**:
+   - `score_by = "newly_nondiagnosed"` to minimize missed diagnoses
+   - `score_by = "false_cases"` to minimize total misclassifications
+4. **Examine multiple metrics**:
+   - Sensitivity is crucial for screening
+   - Specificity matters for differential diagnosis
+   - PPV/NPV inform clinical decision-making
+
+# 6. Conclusion
 With the `PTSDdiag` package, PCL-5 data can be processed and analyzed efficiently. It allows to identify reduced optimal symptom combinations for PTSD diagnosis and to compare different diagnostic approaches by generating detailed diagnostic accuracy metrics.
