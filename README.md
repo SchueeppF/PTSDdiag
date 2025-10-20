@@ -6,6 +6,7 @@
 # PTSDdiag
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ## Description
@@ -24,6 +25,9 @@ maintain diagnostic accuracy while reducing assessment burden.
   - Hierarchical (cluster-based) approach
   - Non-hierarchical approach
 - Comparison of different diagnostic approaches
+- Model validation using:
+  - Holdout Validation
+  - Cross-Validation
 
 ## Installation
 
@@ -40,7 +44,8 @@ devtools::install_github("WeidmannL/PTSDdiag")
 The vignette demonstrates how to use the package to prepare the PCL-5
 data, calculate some basic descriptive statistics and reliability
 metrics, find the optimal minimal symptom combinations for PTSD
-diagnosis and compare different diagnostic approaches.
+diagnosis, compare different diagnostic approaches and perform
+validation methods for evaluating model performance.
 
 - [An Introduction to PTSDdiag](https://osf.io/73bgx)
 
