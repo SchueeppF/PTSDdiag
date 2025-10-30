@@ -312,11 +312,33 @@ cross_validation <- function(data, k = 5, score_by = "newly_nondiagnosed", seed 
     summaries <- lapply(seq_along(cv_list), function(i) {
       fold_data <- cv_list[[i]]
       summary_stats <- summarize_ptsd_changes(fold_data)
+      
+      # Compute diagnostic metrics and avoid division by zero
+      summary_stats <- summary_stats %>%
+        dplyr::mutate(
+          Sensitivity = ifelse((true_positive + newly_nondiagnosed) == 0, NA,
+                               round(true_positive / (true_positive + newly_nondiagnosed), 4)), 
+          Specificity = ifelse((true_negative + newly_diagnosed) == 0, NA,
+                               round(true_negative / (true_negative + newly_diagnosed), 4)),   
+          PPV         = ifelse((true_positive + newly_diagnosed) == 0, NA,
+                               round(true_positive / (true_positive + newly_diagnosed), 4)), 
+          NPV         = ifelse((true_negative + newly_nondiagnosed) == 0, NA,
+                               round(true_negative / (true_negative + newly_nondiagnosed), 4)) 
+        ) %>%
+        
+        # Replace NA values with 0 to prevent errors in summary display
+        dplyr::mutate(
+          across(c(sensitivity, specificity, ppv, npv),
+                 ~ ifelse(is.na(.), 0, .))
+        )
+      
+      # Convert to a readable summary table
       readable <- create_readable_summary(summary_stats)
       readable$Split <- paste0("Split ", i)
       return(readable)
     })
     
+    # Combine all splits into a single dataframe
     final_summary <- dplyr::bind_rows(summaries)
     final_summary <- dplyr::select(final_summary, Split, dplyr::everything())
     
@@ -327,10 +349,10 @@ cross_validation <- function(data, k = 5, score_by = "newly_nondiagnosed", seed 
   summarize_combinations_across_splits <- function(cv_summary) {
     combo_summary <- cv_summary %>%
       dplyr::mutate(
-        Total_Diagnosed_N = as.numeric(gsub(" \\(.*\\)", "", `Total.Diagnosed`)),
-        Total_Diagnosed_Pct = as.numeric(gsub(".*\\((.*)%\\)", "\\1", `Total.Diagnosed`)),
-        Total_Non_Diagnosed_N = as.numeric(gsub(" \\(.*\\)", "", `Total.Non.Diagnosed`)),
-        Total_Non_Diagnosed_Pct = as.numeric(gsub(".*\\((.*)%\\)", "\\1", `Total.Non.Diagnosed`))
+        Total_Diagnosed_N = as.numeric(gsub(" \\(.*\\)", "", `Total Diagnosed`)),
+        Total_Diagnosed_Pct = as.numeric(gsub(".*\\((.*)%\\)", "\\1", `Total Diagnosed`)),
+        Total_Non_Diagnosed_N = as.numeric(gsub(" \\(.*\\)", "", `Total Non-Diagnosed`)),
+        Total_Non_Diagnosed_Pct = as.numeric(gsub(".*\\((.*)%\\)", "\\1", `Total Non-Diagnosed`))
       ) %>%
       dplyr::group_by(Scenario) %>%
       dplyr::summarise(
@@ -343,12 +365,12 @@ cross_validation <- function(data, k = 5, score_by = "newly_nondiagnosed", seed 
           round(mean(Total_Non_Diagnosed_N), 2),
           " (", round(mean(Total_Non_Diagnosed_Pct), 2), "%)"
         ),
-        True_Positive = round(mean(`True.Positive`), 2),
-        True_Negative = round(mean(`True.Negative`), 2),
-        Newly_Diagnosed = round(mean(`Newly.Diagnosed`), 2),
-        Newly_Non_Diagnosed = round(mean(`Newly.Non.Diagnosed`), 2),
-        True_Cases = round(mean(`True.Cases`), 2),
-        False_Cases = round(mean(`False.Cases`), 2),
+        True_Positive = round(mean(`True Positive`), 2),
+        True_Negative = round(mean(`True Negative`), 2),
+        Newly_Diagnosed = round(mean(`Newly Diagnosed`), 2),
+        Newly_Non_Diagnosed = round(mean(`Newly Non-Diagnosed`), 2),
+        True_Cases = round(mean(`True Cases`), 2),
+        False_Cases = round(mean(`False Cases`), 2),
         .groups = "drop"
       ) %>%
       dplyr::mutate(
