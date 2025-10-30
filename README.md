@@ -47,7 +47,7 @@ metrics, find the optimal minimal symptom combinations for PTSD
 diagnosis, compare different diagnostic approaches and perform
 validation methods for evaluating model performance.
 
-- [An Introduction to PTSDdiag](https://osf.io/73bgx)
+- [An Introduction to PTSDdiag](https://osf.io/64n5c/files/ycavz)
 
 ## Bugs, Contributions
 
