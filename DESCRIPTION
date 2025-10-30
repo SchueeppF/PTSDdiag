@@ -10,11 +10,11 @@ Authors@R: c(
     ),
     person(
       "Tobias R.", "Spiller",
-      role = c("aut"),
-    )
+      role = c("aut")
+    ),
     person(
       "Flavio A.", "Schüepp",
-      role = c("aut"),
+      role = c("aut")
     )
   )
 Description: A comprehensive toolkit for analyzing and optimizing PTSD 
